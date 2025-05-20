@@ -1,0 +1,354 @@
+<owner-navbar></owner-navbar>
+<!-- Removed space between navbar and content by adding negative margin-top -->
+<div class="container-fluid" ng-init="init()" style="margin-top: -20px">
+  <!-- Dashboard Header -->
+  <div class="row" style="margin-top: 20px; margin-bottom: 20px">
+    <div class="col-sm-8">
+      <h2 class="text-success"><strong>Your Car Fleet</strong></h2>
+      <p class="text-muted">Manage all your vehicles in one place</p>
+    </div>
+    <div class="col-sm-4 text-right">
+      <button type="button" class="btn btn-success" ui-sref="addCar">
+        <i class="fa fa-plus-circle"></i> Add New Car
+      </button>
+    </div>
+  </div>
+
+
+  <!-- Dashboard Stats in Single Line -->
+  <div class="row">
+    <div class="col-md-12">
+      <div class="panel panel-default">
+        <div class="panel-body">
+          <div class="row">
+            <!-- Total Cars -->
+            <div
+              class="col-md-3 text-center"
+              style="border-right: 1px solid #eee"
+            >
+              <div class="row">
+                <div class="col-xs-3">
+                  <span class="fa-stack fa-2x">
+                    <i
+                      class="fa fa-circle fa-stack-2x text-primary-light"
+                      style="opacity: 0.2"
+                    ></i>
+                    <i class="fa fa-car fa-stack-1x text-primary"></i>
+                  </span>
+                </div>
+                <div class="col-xs-9 text-left">
+                  <h4
+                    class="text-primary"
+                    style="margin-top: 5px; margin-bottom: 0"
+                  >
+                    {{totalItems || 0}}
+                  </h4>
+                  <span class="text-muted">Total Vehicles</span>
+                </div>
+              </div>
+            </div>
+
+            <div
+              class="col-md-3 text-center"
+              style="border-right: 1px solid #eee"
+            >
+              <div class="row">
+                <div class="col-xs-3">
+                  <span class="fa-stack fa-2x">
+                    <i
+                      class="fa fa-circle fa-stack-2x text-info-light"
+                      style="opacity: 0.2"
+                    ></i>
+                    <i class="fa fa-book fa-stack-1x text-info"></i>
+                  </span>
+                </div>
+                <div class="col-xs-9 text-left">
+                  <h4
+                    class="text-info"
+                    style="margin-top: 5px; margin-bottom: 0"
+                  >
+                    {{activeBookings || 0}}
+                  </h4>
+                  <span class="text-muted">Total Bookings</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Paid Bookings -->
+            <div
+              class="col-md-3 text-center"
+              style="border-right: 1px solid #eee"
+            >
+              <div class="row">
+                <div class="col-xs-3">
+                  <span class="fa-stack fa-2x">
+                    <i
+                      class="fa fa-circle fa-stack-2x text-success-light"
+                      style="opacity: 0.2"
+                    ></i>
+                    <i class="fa fa-check-circle fa-stack-1x text-success"></i>
+                  </span>
+                </div>
+                <div class="col-xs-9 text-left">
+                  <h4
+                    class="text-success"
+                    style="margin-top: 5px; margin-bottom: 0"
+                  >
+                    <i class="fa fa-inr"></i> {{totalRevenue || 0 | number:0}}
+                  </h4>
+                  <span class="text-muted">
+                    <strong>{{paidBookings || 0}}</strong> Paid Bookings
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Unpaid Bookings -->
+            <div class="col-md-3 text-center">
+              <div class="row">
+                <div class="col-xs-3">
+                  <span class="fa-stack fa-2x">
+                    <i
+                      class="fa fa-circle fa-stack-2x text-warning-light"
+                      style="opacity: 0.2"
+                    ></i>
+                    <i
+                      class="fa fa-exclamation-circle fa-stack-1x text-warning"
+                    ></i>
+                  </span>
+                </div>
+                <div class="col-xs-9 text-left">
+                  <h4
+                    class="text-warning"
+                    style="margin-top: 5px; margin-bottom: 0"
+                  >
+                    {{unpaidBookings || 0}}
+                    <small class="text-muted" ng-if="activeBookings > 0">
+                      ({{(unpaidBookings / activeBookings * 100) | number:2}}%)
+                    </small>
+                  </h4>
+                  <span class="text-muted">Pending Payments</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filters and Search with UI Bootstrap Components -->
+  <div class="row" style="margin-top: 20px; margin-bottom: 20px">
+    <!-- Search Box -->
+    <div class="col-md-3">
+      <div class="input-group">
+        <span class="input-group-addon">
+          <i class="fa fa-search"></i>
+        </span>
+        <input
+          type="text"
+          class="form-control"
+          ng-model="search"
+          placeholder="Search Car..."
+          ng-change="getCarsData()"
+          ng-model-options="{ debounce: 300 }"
+        />
+      </div>
+    </div>
+
+    <!-- Fuel Type Filter -->
+    <div class="col-md-2">
+      <div class="input-group">
+        <span class="input-group-addon" style="min-width: 40px">
+          <i class="fa fa-tint"></i>
+        </span>
+        <select 
+          class="form-control"
+          ng-model="fuelFilter"
+          ng-change="getCarsData()"
+          >
+          <option value="">All Fuel Types</option>
+          <option ng-repeat="type in fuelTypes" value="{{type.fuelName}}">
+            {{type.fuelName}}
+          </option>
+        </select>
+      </div>
+    </div>
+
+    <!-- City Filter -->
+    <div class="col-md-2">
+      <div class="input-group">
+        <span class="input-group-addon" style="min-width: 40px">
+          <i class="fa fa-map-marker"></i>
+        </span>
+        <select 
+          class="form-control" 
+          ng-model="selectedCity"
+          ng-change="getCarsData()"
+        >
+          <option value="">All Cities</option>
+          <option
+            ng-repeat="city in cities"
+            value="{{city.cityName}}"
+          >
+            {{city.cityName}}
+          </option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Category Filter -->
+    <div class="col-md-2">
+      <div class="input-group">
+        <span class="input-group-addon" style="min-width: 40px">
+          <i class="fa fa-tag"></i>
+        </span>
+        <select 
+          class="form-control" 
+          ng-model="categoryFilter"
+          ng-change="getCarsData()"
+          >
+          <option value="">All Categories</option>
+          <option 
+            ng-repeat="category in categories"
+            value="{{category.categoryName}}"
+            >
+            {{category.categoryName}}
+          </option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Sort By Dropdown -->
+    <div class="col-md-3">
+      <div class="input-group">
+        <span class="input-group-addon" style="min-width: 40px">
+          <i class="fa fa-sort"></i>
+        </span>
+        <select 
+          class="form-control" 
+          ng-model="sortOption"
+          ng-change="getCarsData()"
+          >
+          <option
+            ng-repeat="option in sortOptions"
+            value="{{option.value}}"
+          >
+            {{option.label}}
+          </option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- Loading State -->
+  <div class="text-center" ng-show="isLoading">
+    <uib-progress>
+      <uib-bar value="100" type="info" class="progress-striped active">
+        <span>Loading cars...</span>
+      </uib-bar>
+    </uib-progress>
+    <h4><i class="fa fa-spinner fa-spin"></i> Finding cars...</h4>
+  </div>
+
+  <!-- No Cars State -->
+  <div class="row" ng-if="!isLoading && (!cars || cars.length === 0)">
+    <div class="col-sm-6 col-sm-offset-3 text-center">
+      <uib-alert type="info">
+        <div style="padding: 20px 0">
+          <i class="fa fa-car fa-4x text-muted" style="margin-bottom: 20px"></i>
+          <h3>No cars in your fleet yet</h3>
+          <p class="text-muted" style="margin-bottom: 20px">
+            Start by adding your first car to rent out
+          </p>
+          <button type="button" class="btn btn-success" ui-sref="addCar">
+            <i class="fa fa-plus"></i> Add Your First Car
+          </button>
+        </div>
+      </uib-alert>
+    </div>
+  </div>
+
+  <!-- Car Grid with UI Bootstrap Components -->
+  <div ng-if="!isLoading && cars && cars.length > 0">
+    <div class="row">
+      <div
+        class="col-md-4 col-sm-12"
+        ng-repeat="car in filteredCars = (cars)"
+        style="cursor: pointer; margin-bottom: 20px"
+        
+      >
+      <div ng-click="openBestBidsModal(car)">
+        <!-- Car Card Component -->
+        <card car="car" show-disabled="true"></card>
+        </div>
+        <!-- Action Buttons with UI Bootstrap -->
+        <div class="btn-group btn-group-justified">
+          <div class="btn-group">
+            <button
+              type="button"
+              class="btn btn-default"
+              ng-click="openBookingsModal(car)"
+              uib-tooltip="View all bookings"
+              tooltip-placement="top"
+            >
+              <i class="fa fa-calendar"></i> Bookings
+            </button>
+          </div>
+          <div class="btn-group">
+            <button
+              type="button"
+              class="btn btn-primary"
+              ng-click="openEditCarModel(car)"
+              uib-tooltip="Edit this car"
+              tooltip-placement="top"
+            >
+              <i class="fa fa-edit"></i> Edit
+            </button>
+          </div>
+          <div class="btn-group">
+            <!-- Disable button - shown when car is enabled (isDisabled is false) -->
+            <button
+              type="button"
+              class="btn btn-danger"
+              ng-if="!car.isDisabled"
+              ng-click="openDeleteWarnModal(car)"
+              uib-tooltip="Disable this car"
+              tooltip-placement="top"
+            >
+              <i class="fa fa-ban"></i> Disable
+            </button>
+            
+            <!-- Enable button - shown when car is disabled (isDisabled is true) -->
+            <button
+              type="button"
+              class="btn btn-success"
+              ng-if="car.isDisabled"
+              ng-click="enableCar(car)"
+              uib-tooltip="Enable this car"
+              tooltip-placement="top"
+            >
+              <i class="fa fa-check-circle"></i> Enable
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+ <!-- Pagination with dummy values -->
+ <div class="text-center">
+  <ul
+    uib-pagination
+    total-items="totalItems"
+    ng-model="currentPage"
+    ng-change="getCarsData(currentPage)"
+    items-per-page="itemsPerPage"
+    max-size="maxSize"
+    class="pagination-sm"
+    boundary-link-numbers="true"
+  ></ul>
+</div>
+
+</div>

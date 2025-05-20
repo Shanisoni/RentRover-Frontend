@@ -1,0 +1,240 @@
+<user-navbar></user-navbar>
+
+<div class="container" ng-init="init()">
+
+
+
+  <div class="text-center" ng-show="isLoading">
+    <uib-progress>
+      <uib-bar value="100" type="info" class="progress-striped active">
+        <span>Loading car details...</span>
+      </uib-bar>
+    </uib-progress>
+    <h4><i class="fa fa-spinner fa-spin"></i> Loading car details...</h4>
+  </div>
+
+
+
+
+  <div ng-hide="isLoading">
+
+
+    <div class="panel panel-primary">
+      <div class="panel-heading">
+        <h3 class="panel-title">
+          <i class="fa fa-car"></i> {{ car.carName }}
+          <span class="pull-right">
+            <i class="fa fa-map-marker"></i> {{ car.city }}
+          </span>
+        </h3>
+      </div>
+    </div>
+
+
+    
+    <div class="row">
+
+
+
+      <div class="col-md-8">
+        <div class="panel panel-default">
+
+
+          <div class="panel-heading">
+            <h3 class="panel-title"><i class="fa fa-info-circle"></i> Car Details</h3>
+          </div>
+
+
+
+          <div class="panel-body">
+            <div class="row">
+              <div class="col-md-5 text-center">
+                <img ng-src="{{ car.imageUrl }}" alt="Car Image" class="img-thumbnail img-responsive" style="max-height: 250px;">
+                
+                <div class="well margin-top-10">
+                  <strong><i class="fa fa-tint"></i> Fuel Type:</strong> {{ car.fuelType }}
+                  <br>
+                  <strong><i class="fa fa-tag"></i> Category:</strong> {{ car.category }}
+                </div>
+
+                <div class="panel panel-default">
+                  <div class="panel-heading">
+                    <h3 class="panel-title"><i class="fa fa-user"></i> Car Owner</h3>
+                  </div>
+                  <div class="panel-body text-center">
+                    <h4>{{car.owner.name}}</h4>
+                    <h6>{{car.owner.email}}</h6>
+                    <h6>{{car.owner.phone}}</h6>
+                  </div>
+                </div>
+
+              </div>
+              
+              <div class="col-md-7">
+                <div class="alert alert-info">
+                  <div class="row">
+                    <div class="col-xs-4 text-center">
+                      <h5 style="margin-top: 5px; margin-bottom: 5px;"><i class="fa fa-inr"></i> Base Price</h5>
+                      <h4 style="margin-top: 5px;">{{ car.basePrice | currency:"₹" }}</h4>
+                    </div>
+                    <div class="col-xs-4 text-center">
+                      <h5 style="margin-top: 5px; margin-bottom: 5px;">Outstation Charges</h5>
+                      <h4 style="margin-top: 5px;">{{ car.outStationCharges | currency:"₹" }}</h4>
+                    </div>
+                    <div class="col-xs-4 text-center">
+                      <h5 style="margin-top: 5px; margin-bottom: 5px;"><i class="fa fa-road"></i> Price per km</h5>
+                      <h4 style="margin-top: 5px;">{{ car.pricePerKm | currency:"₹" }}</h4>
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="panel panel-default">
+                  <div class="panel-heading">
+                    <h4 class="panel-title"><i class="fa fa-star"></i> Features</h4>
+                  </div>
+                  <ul class="list-group">
+                    <li class="list-group-item" ng-repeat="feature in car.selectedFeatures">
+                      <i class="fa fa-check text-success"></i> {{ feature }}
+                    </li>
+                  </ul>
+                </div>
+
+                <div class="well">
+                  <h4><i class="fa fa-dashboard"></i> Kilometers Travelled</h4>
+                  <uib-progressbar value="car.travelled" max="100000" type="success" class="progress-striped">
+                    <span style="color: black;">{{ car.travelled }}Kms </span>
+                  </uib-progressbar>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="col-md-4">
+        <div class="panel panel-success">
+          <div class="panel-heading">
+            <h3 class="panel-title"><i class="fa fa-calendar"></i> Book This Car</h3>
+          </div>
+          <div class="panel-body">
+            <form name="carForm" novalidate style="text-decoration: none !important;">
+           
+              <!-- Date range picker -->
+              <div class="form-group" ng-class="{'has-error': carForm.dateRange.$invalid && carForm.dateRange.$dirty}" style="text-decoration: none !important;">
+                <label class="control-label">Select Rental Dates:</label>
+                <div class="input-group">
+                  <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                  <input
+                    type="text"
+                    id="dateRangePicker"
+                    name="dateRange"
+                    class="form-control"
+                    ng-model="car.dateRange"
+                    required
+                    placeholder="Click to select date range"
+                    readonly
+                    ng-click="setupDatePickers()"
+                    style="text-decoration: none !important;"
+                  />
+                </div>
+                <div class="help-block text-danger" ng-show="carForm.dateRange.$invalid && carForm.dateRange.$dirty">
+                  Please select a valid date range
+                </div>
+                <div ng-show="loadingDates" class="text-info">
+                  <small><i class="fa fa-spinner fa-spin"></i> Loading available dates...</small>
+                </div>
+                <div class="text-muted" ng-show="car.startDate && car.endDate">
+                  <small style="text-decoration: none !important;">From: {{car.startDate}} To: {{car.endDate}}</small>
+                </div>
+              </div>
+              
+              <!-- Trip Type selection -->
+              <div class="form-group" style="text-decoration: none !important;">
+                <label class="control-label">Trip Type:</label>
+                <div class="radio" style="text-decoration: none !important;">
+                  <label style="text-decoration: none !important; word-break: keep-all;">
+                    <input type="radio" name="tripType" ng-model="car.tripType" value="inCity" checked>
+                    <i class="fa fa-building"></i> In-City
+                  </label>
+                </div>
+                <div class="radio" style="text-decoration: none !important;">
+                  <label style="text-decoration: none !important; word-break: keep-all;">
+                    <input type="radio" name="tripType" ng-model="car.tripType" value="outStation">
+                    <i class="fa fa-road"></i> Outstation
+                  </label>
+                </div>
+              </div>
+              
+              <!-- Bid amount field -->
+              <div class="form-group" ng-class="{'has-error': carForm.bidAmount.$invalid && carForm.bidAmount.$dirty}" style="text-decoration: none !important;">
+                <label class="control-label">Your Bid Amount:</label>
+                <div class="input-group">
+                  <span class="input-group-addon"><i class="fa fa-inr"></i></span>
+                  <input
+                    type="number"
+                    id="bidAmount"
+                    name="bidAmount"
+                    class="form-control"
+                    ng-model="car.bidAmount"
+                    required
+                    min="{{car.basePrice}}"
+                    placeholder="Enter your bid amount"
+                    style="text-decoration: none !important;"
+                  />
+                </div>
+                <div class="help-block text-danger" ng-show="carForm.bidAmount.$error.required && carForm.bidAmount.$dirty">
+                  Please enter a bid amount
+                </div>
+                <div class="help-block text-danger" ng-show="carForm.bidAmount.$error.min && carForm.bidAmount.$dirty">
+                  Bid amount must be at least {{car.basePrice | currency:"₹"}}
+                </div>
+              </div>
+              
+              <!-- Bidding summary section -->
+              <div class="well well-sm text-center" ng-show="car.startDate && car.endDate && car.bidAmount >= car.basePrice" style="border-radius: 4px; word-break: break-word; text-decoration: none !important; overflow: hidden;">
+                <h4 style="margin-top: 10px;">Bidding Summary</h4>
+                <div style="text-decoration: none !important;">
+                  <p style="text-decoration: none !important;">
+                    <strong>Duration:</strong> {{calculateDays()}} days<br>
+                    <strong>Base Price:</strong> {{car.basePrice | currency:"₹"}}<br>
+                    <strong>Your Bid:</strong> {{car.bidAmount | currency:"₹"}}
+                    <span class="label label-success" ng-show="car.bidAmount > car.basePrice">
+                      +{{car.bidAmount - car.basePrice | currency:"₹"}}
+                    </span><br>
+                    <strong>Total Bid Amount:</strong> {{calculatePrice() | currency:"₹"}}
+                  </p>
+                </div>
+              </div>
+              
+              <!-- Action buttons -->
+              <div class="text-center">
+                <button
+                  type="submit"
+                  class="btn btn-success btn-lg"
+                  ng-click="addBid()"
+                  ng-disabled="carForm.$invalid || car.bidAmount < car.basePrice || disableSubmit"
+                  style="text-decoration: none !important;"
+                >
+                  <i class="fa fa-gavel"></i> Place Bid
+                </button>
+              </div>
+
+              <div class="text-center" style="margin-top: 15px;">
+                <button 
+                  type="button"
+                  class="btn btn-info"
+                  ng-click="chat(car.owner,car)"
+                  uib-tooltip="Chat with the car owner"
+                  tooltip-placement="bottom"
+                  style="text-decoration: none !important;"
+                >
+                  <i class="fa fa-comments"></i> Chat with Owner
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,271 @@
+<user-navbar></user-navbar>
+
+<div class="container" ng-init="init()">
+  <!-- Page Header -->
+  <div class="page-header">
+    <h1><i class="fa fa-calendar-check-o"></i> My Bookings</h1>
+  </div>
+
+  <!-- Loading State -->
+  <div class="text-center" ng-show="isLoading">
+    <uib-progress>
+      <uib-bar value="100" type="info" class="progress-striped active">
+        <span>Loading bookings...</span>
+      </uib-bar>
+    </uib-progress>
+  </div>
+
+  <!-- Filter and Sort Controls - All in one row -->
+  <div class="panel panel-default" ng-hide="isLoading">
+    <div class="panel-heading">
+      <h3 class="panel-title">
+        <i class="fa fa-filter"></i> Filter & Sort
+        <button class="btn btn-link pull-right visible-xs visible-sm" 
+                ng-click="isFilterVisible = !isFilterVisible"
+                style="margin: -5px -10px; padding: 5px 10px; color: inherit;">
+          <i class="fa" ng-class="{'fa-chevron-down': !isFilterVisible, 'fa-chevron-up': isFilterVisible}"></i>
+        </button>
+      </h3>
+    </div>
+    <div class="panel-body" ng-class="{'hidden-xs hidden-sm': !isFilterVisible}">
+      <div class="row">
+        <!-- Search Bar -->
+        <div class="col-md-4">
+          <div class="form-group">
+            <label for="search"><i class="fa fa-search"></i> Search Car:</label>
+            <div class="input-group">
+              <span class="input-group-addon"
+                ><i class="fa fa-search"></i
+              ></span>
+              <input
+                id="search"
+                type="text"
+                class="form-control"
+                ng-model="search"
+                placeholder="Search Car..."
+                ng-change="getUserBookings()"
+                ng-model-options="{ debounce: 300 }"
+              />
+            </div>
+          </div>
+        </div>
+
+        <!-- Filter By Category -->
+        <div class="col-md-4">
+          <div class="form-group">
+            <label for="statusFilter"><i class="fa fa-tag"></i> Status:</label>
+            <select
+              class="form-control"
+              ng-model="selectedFilter"
+              ng-change="getUserBookings()"
+              id="statusFilter"
+            >
+              <option value="">All Statuses</option>
+              <option
+                ng-repeat="(key, value) in filterBookings"
+                value="{{ key }}"
+              >
+                {{ value }}
+              </option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Sort By -->
+        <div class="col-md-4">
+          <div class="form-group">
+            <label for="sortOption"><i class="fa fa-sort"></i> Sort By:</label>
+            <select
+              class="form-control"
+              ng-model="sortOption"
+              ng-change="getUserBookings()"
+              id="sortOption"
+            >
+              <option
+                ng-repeat="option in sortOptions"
+                value="{{option.value}}"
+              >
+                {{option.label}}
+              </option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- No Bookings Message -->
+  <div
+    class="alert alert-info"
+    ng-if="!isLoading && (!bookings || bookings.length === 0)"
+  >
+    <i class="fa fa-info-circle"></i> You don't have any bookings yet.
+  </div>
+
+  <!-- Bookings List with Accordion -->
+  <div ng-hide="isLoading">
+    <uib-accordion>
+      <div
+        uib-accordion-group
+        ng-repeat="booking in filteredBookings = (bookings)"
+        is-open="status.open"
+        ng-class="{
+              'panel-warning': booking.paymentStatus === 'pending',
+              'panel-success': booking.paymentStatus === 'paid',
+            }"
+      >
+        <!-- Accordion Heading -->
+        <uib-accordion-heading>
+          <div class="row">
+            <div class="col-xs-8">
+              <i class="fa fa-car"></i> 
+            <strong>{{booking.car.carName}}</strong>
+              <!-- Payment Status Label -->
+              <span
+                class="label"
+                ng-class="{'label-success': booking.paymentStatus==='paid', 
+                            'label-warning': booking.paymentStatus==='pending'}"
+              >
+                {{booking.paymentStatus==='paid' ? 'Paid' : 'In Progress'}}
+              </span>
+              <span 
+                    class="label"
+                    ng-class="{'label-info': booking.tripType === 'inCity', 'label-primary': booking.tripType === 'outStation'}"
+                    style="margin-left: 2px;"
+                  >
+                    <i ng-class="{'fa fa-building': booking.tripType === 'inCity', 'fa fa-road': booking.tripType === 'outStation'}"></i>
+                    {{booking.tripType === 'outStation' ? 'Outstation' : 'In-City'}}
+                  </span>
+            </div>
+            <div class="col-xs-4 text-right">
+              <span class="label label-primary"
+                >{{booking.bidAmount | currency:"₹"}}</span
+              >
+              <span class="text-muted"
+                ><small>{{booking.startDate | date:'MMM d, y'}}</small></span
+              >
+              <small
+                ><i
+                  class="pull-right glyphicon"
+                  ng-class="{'glyphicon-chevron-down': status.open, 'glyphicon-chevron-right': !status.open}"
+                ></i
+              ></small>
+            </div>
+          </div>
+        </uib-accordion-heading>
+
+        <!-- Accordion Content -->
+       <!-- Booking Details -->
+       <div class="row">
+        <!-- Car Details -->
+        <div class="col-md-5">
+          <div class="panel panel-default">
+            <div class="panel-heading">
+              <h3 class="panel-title"><i class="fa fa-car"></i> Car Details</h3>
+            </div>
+            <div class="panel-body">
+              <div class="media">
+                <div class="media-left">
+                  <img class="media-object img-thumbnail" ng-src="{{ booking.car.imageUrl }}" alt="{{ booking.car.carName }}" style="max-width: 100px;">
+                </div>
+                <div class="media-body">
+                  <h4 class="media-heading">{{ booking.car.carName }}</h4>
+                  <ul class="list-unstyled">
+                    <li><strong>Traveled:</strong> {{ booking.car.travelled || 0 }} km</li>
+                    <li><strong>Base Price:</strong> {{ booking.car.basePrice | currency:"₹" }}</li>
+                    <li><strong>Price per Km:</strong> {{ booking.car.pricePerKm | currency:"₹" }}</li>
+                    <li ng-if="booking.tripType === 'outStation'"><strong>Outstation:</strong> {{booking.car.outStationCharges | currency:"₹"}}/day</li>
+                  </ul>
+                </div>
+              </div>
+              <hr>
+              <div class="row">
+                <div class="col-xs-6">
+                  <div class="well well-sm text-center">
+                    <p class="text-muted"><small>Start Date</small></p>
+                    <h4>{{ booking.startDate | date:'MMM d, y' }}</h4>
+                  </div>
+                </div>
+                <div class="col-xs-6">
+                  <div class="well well-sm text-center">
+                    <p class="text-muted"><small>End Date</small></p>
+                    <h4>{{ booking.endDate | date:'MMM d, y' }}</h4>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Owner Details -->
+        <div class="col-md-4">
+          <div class="panel panel-default">
+            <div class="panel-heading">
+              <h3 class="panel-title"><i class="fa fa-user"></i> Owner Information</h3>
+            </div>
+            <div class="panel-body">
+              <div class="media" ng-if="booking.owner">
+                <div class="media-left">
+                  <img class="media-object img-circle" ng-src="assets\img\default.png" alt="{{ booking.owner.name }}" style="width: 64px; height: 64px;">
+                </div>
+                <div class="media-body">
+                  <h4 class="media-heading">{{ booking.owner.name }}</h4>
+                  <p><i class="fa fa-envelope"></i> {{ booking.owner.email }}</p>
+                  <p><i class="fa fa-phone"></i> {{ booking.owner.phone || 'N/A' }}</p>
+                </div>
+              </div>
+              <div class="alert alert-warning" ng-if="!booking.owner">
+                <i class="fa fa-exclamation-triangle"></i> Owner details not available
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Payment Status -->
+        <div class="col-md-3">
+          <div class="panel panel-default">
+            <div class="panel-heading">
+              <h3 class="panel-title"><i class="fa fa-tasks"></i> Status</h3>
+            </div>
+            <div class="panel-body">
+              <p class="text-center text-muted">
+                <small>Payment Status</small>
+              </p>
+              <p class="text-center">
+                <span class="label label-lg" 
+                      ng-class="{
+                        'label-warning': booking.paymentStatus === 'pending',
+                        'label-success': booking.paymentStatus === 'paid'
+                      }"
+                      style="font-size: 1.2em; padding: 8px 12px;">
+                  {{ booking.paymentStatus | uppercase }}
+                </span>
+              </p>
+              <hr>
+              <div ng-if="booking.paymentStatus === 'paid'">
+                <button class="btn btn-primary btn-block" ng-click="getInvoice(booking)">
+                  <i class="fa fa-file-pdf-o"></i> Download Invoice
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+       </div>
+    </uib-accordion>
+  </div>
+
+<div class="text-center">
+    <ul
+      uib-pagination
+      total-items="totalItems"
+      ng-model="currentPage"
+      ng-change="getUserBookings(currentPage)"
+      items-per-page="itemsPerPage"
+      max-size="maxSize"
+      class="pagination-sm"
+      boundary-link-numbers="true"
+    ></ul>
+  </div>
+
+</div>

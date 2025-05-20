@@ -1,0 +1,312 @@
+<owner-navbar></owner-navbar>
+
+<div class="container" ng-init="init()">
+  <!-- Page Header -->
+  <div class="page-header">
+    <h1 class="visible-md visible-lg">Bidding Management <small>Review and manage bids</small></h1>
+    <h2 class="visible-xs visible-sm" style="margin-top: 10px; font-size: 24px;">
+      Bidding Management 
+      <small style="font-size: 16px;">Review and manage bids</small>
+    </h2>
+  </div>
+  
+  <!-- Loading State -->
+  <div class="text-center" ng-show="isLoading">
+    <uib-progress>
+      <uib-bar value="100" type="primary">
+        <i class="fa fa-spinner fa-spin"></i> Loading biddings...
+      </uib-bar>
+    </uib-progress>
+  </div>
+  
+  <!-- Content Area (hidden while loading) -->
+  <div ng-hide="isLoading">
+    <!-- Filters and Controls -->
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">
+          <i class="fa fa-filter"></i> Filters
+          <!-- Mobile Toggle Button -->
+          <button class="btn btn-link pull-right visible-xs visible-sm" 
+                  ng-click="isFilterVisible = !isFilterVisible"
+                  style="margin: -5px -10px; padding: 5px 10px; color: inherit;">
+            <i class="fa" ng-class="{'fa-chevron-down': !isFilterVisible, 'fa-chevron-up': isFilterVisible}"></i>
+          </button>
+        </h3>
+      </div>
+      <div class="panel-body" ng-class="{'hidden-xs hidden-sm': !isFilterVisible}">
+        <div class="row">
+          <div class="col-md-4">
+            <div class="form-group">
+              <label for="search"><i class="fa fa-search"></i> Search Car:</label>
+              <div class="input-group">
+                <span class="input-group-addon"><i class="fa fa-search"></i></span>
+                <input
+                  id="search"
+                  type="text"
+                  class="form-control"
+                  ng-model="search"
+                  placeholder="Search Car..."
+                  ng-change="getUserBiddings()"
+                  ng-model-options="{ debounce: 300 }"
+                />
+              </div>
+            </div>
+          </div>
+  
+          <!-- Status Filter -->
+          <div class="col-md-4">
+            <div class="form-group">
+              <label for="statusFilter"><i class="fa fa-tag"></i> Status:</label>
+              <select
+                class="form-control"
+                ng-model="selectedFilter"
+                ng-change="getUserBiddings()"
+                id="statusFilter"
+              >
+                <option value="">All Statuses</option>
+                <option ng-repeat="(key, value) in filterBid" value="{{ key }}">
+                  {{ value }}
+                </option>
+              </select>
+            </div>
+          </div>
+  
+          <!-- Sort Bar -->
+          <div class="col-md-4">
+            <div class="form-group">
+              <label for="sortOption"><i class="fa fa-sort"></i> Sort By:</label>
+              <select
+                class="form-control"
+                ng-model="sortOption"
+                ng-change="getUserBiddings()"
+                id="sortOption"
+              >
+                <option
+                  ng-repeat="option in sortOptions"
+                  value="{{option.value}}"
+                >
+                  {{option.label}}
+                </option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- No Bids Message -->
+    <div class="alert alert-info text-center" ng-show="biddings.length === 0">
+      <i class="fa fa-info-circle fa-2x"></i>
+      <p class="lead">No biddings found matching your criteria</p>
+    </div>
+    
+    <!-- Biddings List -->
+    <uib-accordion close-others="false">
+      <div uib-accordion-group 
+           class="panel" 
+           ng-class="{
+             'panel-warning': bid.status === 'pending',
+             'panel-success': bid.status === 'accepted',
+             'panel-danger': bid.status === 'rejected'
+           }"
+            is-open="status.open"
+           ng-repeat="bid in biddings">
+        <uib-accordion-heading>
+          <div class="row">
+            <div class="col-xs-8">
+              <i class="fa fa-car"></i> 
+              <strong>{{ bid.car.carName }}</strong>
+              <span class="label" 
+                    ng-class="{
+                      'label-warning': bid.status === 'pending',
+                      'label-success': bid.status === 'accepted',
+                      'label-danger': bid.status === 'rejected'
+                    }">
+                {{ bid.status === 'accepted' ? 'Accepted' : (bid.status === 'pending' ? 'Pending' : 'Rejected') }}
+              </span>
+              <span 
+                    class="label"
+                    ng-class="{'label-info': bid.tripType === 'inCity', 'label-primary': bid.tripType === 'outStation'}"
+                    style="margin-left: 2px;"
+                  >
+                    <i ng-class="{'fa fa-building': bid.tripType === 'inCity', 'fa fa-road': bid.tripType === 'outStation'}"></i>
+                    {{bid.tripType === 'outStation' ? 'Outstation' : 'In-City'}}
+                  </span>
+            </div>
+            <div class="col-xs-4 text-right">
+              <span class="label label-primary">
+                {{bid.bidAmount | currency:"₹"}}</span
+              >
+              <span class="text-muted"
+                ><small>{{bid.startDate | date:'MMM d, y'}}</small></span
+              >
+              <small
+              ><i
+                class="pull-right glyphicon"
+                ng-class="{'glyphicon-chevron-down': status.open, 'glyphicon-chevron-right': !status.open}"
+              ></i
+            ></small>
+            </div>
+          </div>
+        </uib-accordion-heading>
+        
+        <!-- Bidding Details -->
+        <div class="row">
+          <!-- Car Details -->
+          <div class="col-md-5">
+            <div class="panel panel-default">
+              <div class="panel-heading">
+                <h3 class="panel-title"><i class="fa fa-car"></i> Car Details</h3>
+              </div>
+              <div class="panel-body">
+                <div class="media">
+                  <div class="media-left">
+                    <img class="media-object img-thumbnail" ng-src="{{ bid.car.imageUrl }}" alt="{{ bid.car.carName }}" style="max-width: 100px;">
+                  </div>
+                  <div class="media-body">
+                    <h4 class="media-heading">{{ bid.car.carName }}</h4>
+                    <ul class="list-unstyled">
+                      <li><strong>Category:</strong> {{ bid.car.category }}</li>
+                      <li><strong>Base Price:</strong> {{ bid.car.basePrice | currency:"₹" }}</li>
+                      <li><strong>Bid Amount:</strong> {{ bid.bidAmount | currency:"₹" }}</li>
+                      <li><strong>Price per Km:</strong> {{ bid.car.pricePerKm | currency:"₹" }}</li>
+                      <li><strong>OutStation Price:</strong> {{ bid.car.outStationCharges | currency:"₹" }}</li>
+                    </ul>
+                  </div>
+                </div>
+                <hr>
+                <div class="row">
+                  <div class="col-xs-6">
+                    <div class="well well-sm text-center">
+                      <p class="text-muted"><small>Start Date</small></p>
+                      <h4>{{ bid.startDate | date:'MMM d, y' }}</h4>
+                    </div>
+                  </div>
+                  <div class="col-xs-6">
+                    <div class="well well-sm text-center">
+                      <p class="text-muted"><small>End Date</small></p>
+                      <h4>{{ bid.endDate | date:'MMM d, y' }}</h4>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- User Details -->
+          <div class="col-md-4">
+            <div class="panel panel-default">
+              <div class="panel-heading">
+                <h3 class="panel-title"><i class="fa fa-user"></i> User Information</h3>
+              </div>
+              <div class="panel-body">
+                <div class="media">
+                  <div class="media-left">
+                    <img class="media-object img-circle" ng-src="assets\img\default.png" alt="{{ bid.user.name }}" style="width: 64px; height: 64px;">
+                  </div>
+                  <div class="media-body">
+                    <h4 class="media-heading">{{ bid.user.name }}</h4>
+                    <p><i class="fa fa-envelope"></i> {{ bid.user.email }}</p>
+                    <p><i class="fa fa-phone"></i> {{ bid.user.phone || 'N/A' }}</p>
+                  </div>
+                </div>
+                <hr>
+                <!-- Simple User Stats -->
+                <div class="alert alert-info">
+                  <p class="text-center">
+                    <i class="fa fa-info-circle"></i> 
+                    User joined on {{ bid.user.createdAt | date:'mediumDate' }}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Actions Panel -->
+          <div class="col-md-3">
+            <div class="panel panel-default">
+              <div class="panel-heading">
+                <h3 class="panel-title"><i class="fa fa-tasks"></i> Actions</h3>
+              </div>
+              <div class="panel-body">
+                <p class="text-center text-muted">
+                  <small>Bid Status</small>
+                </p>
+                <p class="text-center">
+                  <span class="label label-lg" 
+                        ng-class="{
+                          'label-warning': bid.status === 'pending',
+                          'label-success': bid.status === 'accepted',
+                          'label-danger': bid.status === 'rejected'
+                        }"
+                        style="font-size: 1.2em; padding: 8px 12px;">
+                    {{ bid.status | uppercase }}
+                  </span>
+                </p>
+                <hr>
+                
+                <!-- Action Buttons -->
+                <div ng-if="bid.status === 'pending'">
+                  <button class="btn btn-success btn-block" ng-click="acceptBid(bid)">
+                    <i class="fa fa-check"></i> Accept Bid
+                  </button>
+                  <button class="btn btn-danger btn-block" style="margin-top: 10px;" ng-click="rejectBid(bid)">
+                    <i class="fa fa-times"></i> Reject Bid
+                  </button>
+                </div>
+                
+                <!-- Non-pending status message -->
+                <div class="alert" 
+                     ng-if="bid.status !== 'pending'"
+                     ng-class="{
+                       'alert-success': bid.status === 'accepted',
+                       'alert-danger': bid.status === 'rejected'
+                     }">
+                  <p class="text-center">
+                    <i class="fa" ng-class="{
+                      'fa-check-circle': bid.status === 'accepted',
+                      'fa-times-circle': bid.status === 'rejected'
+                    }"></i>
+                    This bid has been <strong>{{ bid.status }}</strong>
+                  </p>
+                  <p class="text-center text-muted" ng-if="bid.actionDate">
+                    <small>{{ bid.actionDate | date:'medium' }}</small>
+                  </p>
+                </div>
+                
+                <!-- View Details Button - Simple Alternative -->
+                
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Bid Details Section - Simplified -->
+        <div class="panel panel-default" ng-if="bid.details">
+          <div class="panel-heading">
+            <h4><i class="fa fa-file-text-o"></i> Bid Details</h4>
+          </div>
+          <div class="panel-body">
+            <p>{{ bid.details }}</p>
+          </div>
+        </div>
+      </div>
+    </uib-accordion>
+  </div>
+  
+
+  <div class="text-center">
+    <ul
+      uib-pagination
+      total-items="totalItems"
+      ng-model="currentPage"
+      ng-change="getUserBiddings(currentPage)"
+      items-per-page="itemsPerPage"
+      max-size="maxSize"
+      class="pagination-sm"
+      boundary-link-numbers="true"
+    ></ul>
+  </div>
+  
+</div>

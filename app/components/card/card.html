@@ -1,0 +1,153 @@
+<div class="panel panel-default">
+  <!-- Car Image Section -->
+  <div class="panel-heading" style="padding: 0; position: relative">
+    <img
+      ng-src="{{$ctrl.car.imageUrl}}"
+      class="img-responsive"
+      alt="{{$ctrl.car.name}}"
+      style="width: 100%; height: 165px; object-fit: cover"
+    />
+    <div
+      style="
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        padding: 8px 12px;
+        background: rgba(0, 0, 0, 0.5);
+        color: white;
+      "
+    >
+      <i class="fa fa-map-marker"></i> {{$ctrl.car.city}}
+    </div>
+  </div>
+
+  <!-- Car Header -->
+  <div class="panel-heading" style="border-top: 0">
+    <div class="row">
+      <div class="col-xs-8">
+        <h4
+          class="panel-title text-success"
+          style="
+            margin: 0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+          "
+        >
+          {{$ctrl.car.carName}} - {{$ctrl.car.category}}
+        </h4>
+      </div>
+      <div class="col-xs-4 text-right">
+        <span
+          class="label label-default"
+          style="font-size: 11px; letter-spacing: 1px"
+        >
+          {{$ctrl.car.numberPlate}}
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Car Details Section -->
+  <div class="panel-body">
+    <div class="row">
+      <!-- Left Side: Car Details -->
+      <div class="col-xs-7" style="margin-top: 8px">
+        <div class="row">
+          <div class="col-xs-6 text-muted" style="white-space: nowrap;">Base Price:</div>
+          <div class="col-xs-6 text-right">
+            <strong>{{ $ctrl.car.basePrice | currency:"₹" }}</strong>
+          </div>
+        </div>
+        <div class="row" style="margin-top: 2px">
+          <div class="col-xs-6 text-muted">Outstation:</div>
+          <div class="col-xs-6 text-right">
+            <strong>{{ $ctrl.car.outStationCharges | currency:"₹" }}</strong>
+          </div>
+        </div>
+        <div class="row" style="margin-top: 2px">
+          <div class="col-xs-6 text-muted" style="white-space: nowrap;">Price per km:</div>
+          <div class="col-xs-6 text-right">
+            <strong>{{$ctrl.car.pricePerKm | currency:"₹"}}</strong>
+          </div>
+        </div>
+        <div class="row" style="margin-top: 2px">
+          <div class="col-xs-8 text-muted" style="white-space: nowrap;">Fine Per Extra Day:</div>
+          <div class="col-xs-4 text-right">
+            <strong>{{$ctrl.car.finePercentage}} %</strong>
+          </div>
+        </div>
+        <div class="row" style="margin-top: 2px">
+          <div class="col-xs-6 text-muted">Travelled:</div>
+          <div class="col-xs-6 text-right">
+            <strong>{{$ctrl.car.travelled}} km</strong>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Side: Fuel Info -->
+      <div class="col-xs-5 text-center"  style="margin-top: 2px">
+        <div
+          style="border-left: 1px solid #ddd; height: 100%; padding-left: 15px"
+        >
+          <img
+            ng-src="{{$ctrl.car.fuelPump}}"
+            alt="Fuel type"
+            style="height: 32px; max-width: 100%; margin-bottom: 2px"
+          />
+          <br />
+          <span
+            class="label"
+            ng-class="{
+                  'label-success': $ctrl.car.fuelType === 'Petrol',
+                  'label-primary': $ctrl.car.fuelType === 'Diesel',
+                  'label-info': $ctrl.car.fuelType === 'Electric',
+                  'label-warning': $ctrl.car.fuelType === 'CNG',
+                  'label-default': !['Petrol', 'Diesel', 'Electric', 'CNG'].includes($ctrl.car.fuelType)
+                }"
+          >
+            {{$ctrl.car.fuelType}}
+          </span>
+        
+        <!-- Features Section -->
+        <div class="text-left" style="margin-top: 8px; margin-left: 4px; font-size: 12px">
+          <!-- Feature 1 -->
+          <div
+            ng-if="$ctrl.car.selectedFeatures && $ctrl.car.selectedFeatures.length > 0"
+            style="margin-bottom: 2px; white-space: nowrap;"
+
+          >
+            <i class="fa fa-check-circle text-success"></i>
+            <span style="color: #555;"
+              >{{$ctrl.car.selectedFeatures[0]}}</span
+            >
+          </div>
+
+          <!-- Feature 2 -->
+          <div
+            ng-if="$ctrl.car.selectedFeatures && $ctrl.car.selectedFeatures.length > 1"
+            style="margin-bottom: 2px; white-space: nowrap;"
+          >
+            <i class="fa fa-check-circle text-success"></i>
+            <span style="color: #555;"
+              >{{$ctrl.car.selectedFeatures[1]}}</span
+            >
+          </div>
+
+          <!-- Feature 3 -->
+          <div
+            ng-if="$ctrl.car.selectedFeatures && $ctrl.car.selectedFeatures.length > 2"
+            style="margin-bottom: 2px; white-space: nowrap;"
+          >
+            <i class="fa fa-check-circle text-success"></i>
+            <span style="color: #555;"
+              >{{$ctrl.car.selectedFeatures[2]}}</span
+            >
+          </div>
+        </div>
+      </div>
+      </div>
+    </div>
+  </div>
+</div>

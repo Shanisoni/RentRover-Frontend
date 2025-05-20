@@ -1,0 +1,306 @@
+<owner-navbar></owner-navbar>
+
+<div class="container">
+  <div class="panel panel-primary">
+    <div class="panel-heading">
+      <h3 class="panel-title"><i class="fa fa-car"></i> Add New Car</h3>
+    </div>
+    <div class="panel-body">
+      <form name="carForm" ng-submit="addCar(carForm)" novalidate>
+        <div class="row">
+          <!-- Left Column -->
+          <div class="col-md-6">
+            <!-- Car Name -->
+            <div class="form-group" ng-class="{'has-error': carForm.carName.$invalid && (carForm.carName.$dirty || formSubmitted)}">
+              <label class="control-label">Car Name:</label>
+              <input type="text" name="carName" class="form-control" ng-model="car.carName" required />
+              <span class="help-block" ng-show="carForm.carName.$error.required && (carForm.carName.$dirty || formSubmitted)">
+                Car name is required
+              </span>
+            </div>
+            
+            <!-- License Plate Number -->
+            <div class="form-group" ng-class="{'has-error': carForm.numberPlate.$invalid && (carForm.numberPlate.$dirty || formSubmitted)}">
+              <label class="control-label">License Plate Number:</label>
+              <input 
+                type="text" 
+                name="numberPlate" 
+                class="form-control" 
+                ng-model="car.numberPlate" 
+                placeholder="e.g., MH02AB1234" 
+                ng-pattern="/^[A-Z]{2}[0-9]{2}[A-Z]{1,2}[0-9]{4}$/"
+                required
+              />
+              <span class="help-block" ng-show="carForm.numberPlate.$error.required && (carForm.numberPlate.$dirty || formSubmitted)">
+                License plate number is required
+              </span>
+              <span class="help-block" ng-show="carForm.numberPlate.$error.pattern && (carForm.numberPlate.$dirty || formSubmitted)">
+                Please enter a valid license plate number (e.g., MH02AB1234)
+              </span>
+              <span class="help-block text-muted">
+                <small><i class="fa fa-info-circle"></i> Format: State code (2 letters) + District code (2 digits) + Series (1-2 letters) + Number (4 digits)</small>
+              </span>
+            </div>
+            
+            <!-- Car Category -->
+            <div class="form-group" ng-class="{'has-error': carForm.category.$invalid && (carForm.category.$dirty || formSubmitted)}">
+              <label class="control-label">Car Category:</label>
+              <select
+                class="form-control"
+                name="category"
+                ng-model="car.category"
+                ng-options="category for category in categories"
+                required
+              >
+                <option value="">Select Category</option>
+              </select>
+              <span class="help-block" ng-show="carForm.category.$error.required && (carForm.category.$dirty || formSubmitted)">
+                Please select a category
+              </span>
+            </div>
+            
+            <!-- Fuel Type -->
+            <div class="form-group" ng-class="{'has-error': carForm.fuelType.$invalid && (carForm.fuelType.$dirty || formSubmitted)}">
+              <label class="control-label">Fuel Type:</label>
+              <select
+                class="form-control"
+                name="fuelType"
+                ng-model="car.fuelType"
+                ng-options="fuel for fuel in fuelTypes"
+                required
+              >
+                <option value="">Select Fuel Type</option>
+              </select>
+              <span class="help-block" ng-show="carForm.fuelType.$error.required && (carForm.fuelType.$dirty || formSubmitted)">
+                Please select a fuel type
+              </span>
+            </div>
+            
+            <!-- Base Price -->
+            <div class="form-group" ng-class="{'has-error': carForm.basePrice.$invalid && (carForm.basePrice.$dirty || formSubmitted)}">
+              <label class="control-label">Base Price:</label>
+              <div class="input-group">
+                <span class="input-group-addon">₹</span>
+                <input
+                  type="number"
+                  name="basePrice"
+                  class="form-control"
+                  ng-model="car.basePrice"
+                  min="1"
+                  required
+                />
+              </div>
+              <span class="help-block" ng-show="carForm.basePrice.$error.required && (carForm.basePrice.$dirty || formSubmitted)">
+                Base price is required
+              </span>
+              <span class="help-block" ng-show="carForm.basePrice.$error.min && (carForm.basePrice.$dirty || formSubmitted)">
+                Base price must be greater than 0
+              </span>
+            </div>
+          </div>
+
+          <!-- Right Column -->
+          <div class="col-md-6">
+            <!-- Price per km -->
+            <div class="form-group" ng-class="{'has-error': carForm.pricePerKm.$invalid && (carForm.pricePerKm.$dirty || formSubmitted)}">
+              <label class="control-label">Price per km:</label>
+              <div class="input-group">
+                <span class="input-group-addon">₹</span>
+                <input
+                  type="number"
+                  name="pricePerKm"
+                  class="form-control"
+                  ng-model="car.pricePerKm"
+                  min="1"
+                  required
+                />
+              </div>
+              <span class="help-block" ng-show="carForm.pricePerKm.$error.required && (carForm.pricePerKm.$dirty || formSubmitted)">
+                Price per km is required
+              </span>
+              <span class="help-block" ng-show="carForm.pricePerKm.$error.min && (carForm.pricePerKm.$dirty || formSubmitted)">
+                Price per km must be greater than 0
+              </span>
+            </div>
+
+
+            <!-- Outstaion Charges -->
+            <div class="form-group" ng-class="{'has-error': carForm.outStationCharges.$invalid && (carForm.outStationCharges.$dirty || formSubmitted)}">
+              <label class="control-label">Outstation Charges:</label>
+              <div class="input-group">
+                <span class="input-group-addon">₹</span>
+                <input
+                  type="number"
+                  name="outStationCharges"
+                  class="form-control"
+                  ng-model="car.outStationCharges"
+                  min="1"
+                  required
+                />
+              </div>
+              <span class="help-block" ng-show="carForm.outStationCharges.$error.required && (carForm.outStationCharges.$dirty || formSubmitted)">
+                Price per km is required
+              </span>
+              <span class="help-block" ng-show="carForm.outStationCharges.$error.min && (carForm.outStationCharges.$dirty || formSubmitted)">
+                Price per km must be greater than 0
+              </span>
+            </div>
+            
+            <!-- Fine Percentage -->
+            <div class="form-group" ng-class="{'has-error': carForm.finePercentage.$invalid && (carForm.finePercentage.$dirty || formSubmitted)}">
+              <label class="control-label">Fine % Per Late Return Day:</label>
+              <div class="input-group">
+                <input
+                  type="number"
+                  name="finePercentage"
+                  class="form-control"
+                  ng-model="car.finePercentage"
+                  ng-init="car.finePercentage = 50"
+                  min="0"
+                  max="100"
+                  required
+                />
+                <span class="input-group-addon">%</span>
+              </div>
+              <span class="help-block" ng-show="carForm.finePercentage.$error.required && (carForm.finePercentage.$dirty || formSubmitted)">
+                Fine percentage is required
+              </span>
+              <span class="help-block" ng-show="carForm.finePercentage.$error.min && (carForm.finePercentage.$dirty || formSubmitted)">
+                Fine percentage must be 0 or greater
+              </span>
+              <span class="help-block" ng-show="carForm.finePercentage.$error.max && (carForm.finePercentage.$dirty || formSubmitted)">
+                Fine percentage cannot exceed 100
+              </span>
+              <span class="help-block text-muted">
+                <small><i class="fa fa-info-circle"></i> Extra percentage of the bid/rent amount charged for each day of late return.</small>
+              </span>
+            </div>
+
+
+            <!-- Kms travelled -->
+            <div class="form-group" ng-class="{'has-error': carForm.travelled.$invalid && (carForm.travelled.$dirty || formSubmitted)}">
+              <label class="control-label">Kms travelled:</label>
+              <div class="input-group">
+                <input
+                  type="number"
+                  name="travelled"
+                  class="form-control"
+                  ng-model="car.travelled"
+                  min="0"
+                  required
+                />
+                <span class="input-group-addon">km</span>
+              </div>
+              <span class="help-block" ng-show="carForm.travelled.$error.required && (carForm.travelled.$dirty || formSubmitted)">
+                Kilometers travelled is required
+              </span>
+              <span class="help-block" ng-show="carForm.travelled.$error.min && (carForm.travelled.$dirty || formSubmitted)">
+                Kilometers travelled must be 0 or greater
+              </span>
+            </div>
+
+            <!-- City -->
+            <div class="form-group" ng-class="{'has-error': carForm.city.$invalid && (carForm.city.$dirty || formSubmitted)}">
+              <label class="control-label">City:</label>
+              <select
+                class="form-control"
+                name="city"
+                ng-model="car.city"
+                ng-options="city for city in cities"
+                required
+              >
+                <option value="">Select City</option>
+              </select>
+              <span class="help-block" ng-show="carForm.city.$error.required && (carForm.city.$dirty || formSubmitted)">
+                Please select a city
+              </span>
+            </div>
+            
+            <!-- Car Image -->
+            <div class="form-group" ng-class="{'has-error': formSubmitted && !car.image}">
+              <label class="control-label">Car Image:</label>
+              <input
+                type="file"
+                name="carImage"
+                class="form-control"
+                accept="image/*"
+                onchange="angular.element(this).scope().uploadImage(this)"
+              />
+              <span class="help-block" ng-show="formSubmitted && !car.image">
+                Please upload a car image
+              </span>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Features Section -->
+        <div class="row">
+          <div class="col-md-12">
+            <div class="panel panel-default">
+              <div class="panel-heading">
+                <h4 class="panel-title">Select Top 3 Features</h4>
+              </div>
+              <div class="panel-body">
+                <div class="alert alert-info">
+                  <i class="fa fa-info-circle"></i> Please select up to 3 key features for your car.
+                </div>
+                <div class="row">
+                  <div class="col-xs-12" ng-class="{'has-error': selectedFeatures.length < 1 && formSubmitted}">
+                    <div class="form-group">
+                      <div class="btn-group btn-group-justified">
+                        <div class="btn-group" ng-repeat="feature in availableFeatures" ng-if="$index < 5">
+                          <button type="button" class="btn" 
+                            ng-class="{'btn-primary': selectedFeatures.indexOf(feature) > -1, 'btn-default': selectedFeatures.indexOf(feature) === -1}"
+                            ng-disabled="selectedFeatures.indexOf(feature) === -1 && selectedFeatures.length >= 3"
+                            ng-click="toggleFeature(feature)"
+                            style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                            {{feature}}
+                          </button>
+                        </div>
+                      </div>
+                      <div class="btn-group btn-group-justified" style="margin-top: 10px;">
+                        <div class="btn-group" ng-repeat="feature in availableFeatures" ng-if="$index >= 5">
+                          <button type="button" class="btn" 
+                            ng-class="{'btn-primary': selectedFeatures.indexOf(feature) > -1, 'btn-default': selectedFeatures.indexOf(feature) === -1}"
+                            ng-disabled="selectedFeatures.indexOf(feature) === -1 && selectedFeatures.length >= 3"
+                            ng-click="toggleFeature(feature)"
+                            style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                            {{feature}}
+                          </button>
+                        </div>
+                      </div>
+                      <span class="help-block" ng-show="selectedFeatures.length < 1 && formSubmitted">
+                        Please select at least one feature
+                      </span>
+                    </div>
+                    <div class="well well-sm text-center">
+                      Selected features ({{selectedFeatures.length}}/3): 
+                      <span ng-repeat="feature in selectedFeatures">
+                        <span class="label label-primary">{{feature}}</span>
+                        <span ng-if="!$last">&nbsp;</span>
+                      </span>
+                      <span ng-if="selectedFeatures.length === 0">None selected</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Submit Button -->
+        <div class="form-group text-center">
+          <button type="submit" class="btn btn-lg"
+                  ng-class="{'btn-primary': !carForm.$invalid && car.image && selectedFeatures.length > 0, 'btn-default': carForm.$invalid || !car.image || selectedFeatures.length === 0}"
+                  ng-disabled="carForm.$invalid || !car.image || selectedFeatures.length === 0 || disabled">
+            <i class="fa fa-plus-circle"></i> Add Car
+          </button>
+          <p class="help-block text-danger" ng-show="carForm.$invalid || !car.image || selectedFeatures.length === 0">
+            <i class="fa fa-exclamation-triangle"></i> 
+            Please complete all required fields correctly before submitting
+          </p>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

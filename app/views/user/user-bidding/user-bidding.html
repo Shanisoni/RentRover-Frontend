@@ -1,0 +1,269 @@
+<user-navbar></user-navbar>
+
+<div class="container" ng-init="init()">
+  <!-- Page Header -->
+  <div class="page-header">
+    <h1><i class="fa fa-gavel"></i> My Biddings</h1>
+  </div>
+
+  <!-- Loading State -->
+  <div class="text-center" ng-show="isLoading">
+    <uib-progress>
+      <uib-bar value="100" type="info" class="progress-striped active">
+        <span>Loading biddings...</span>
+      </uib-bar>
+    </uib-progress>
+  </div>
+
+  <!-- Filter and Sort Controls - All in one row -->
+  <div class="panel panel-default" ng-hide="isLoading">
+    <div class="panel-heading">
+      <h3 class="panel-title"><i class="fa fa-filter"></i> Filters
+        <!-- Mobile Toggle Button -->
+        <button class="btn btn-link pull-right visible-xs visible-sm" 
+                ng-click="isFilterVisible = !isFilterVisible"
+                style="margin: -5px -10px; padding: 5px 10px; color: inherit;">
+          <i class="fa" ng-class="{'fa-chevron-down': !isFilterVisible, 'fa-chevron-up': isFilterVisible}"></i>
+        </button>
+      </h3>
+    </div>
+    <div class="panel-body" ng-class="{'hidden-xs hidden-sm': !isFilterVisible}">
+      <div class="row">
+        <!-- Search Bar -->
+        <div class="col-md-4">
+          <div class="form-group">
+            <label for="search"><i class="fa fa-search"></i> Search Car:</label>
+            <div class="input-group">
+              <span class="input-group-addon"
+                ><i class="fa fa-search"></i
+              ></span>
+              <input
+              id="search"
+                type="text"
+                class="form-control"
+                ng-model="search"
+                placeholder="Search Car..."
+                ng-change="getUserBiddings()"
+              ng-model-options="{ debounce: 300 }"
+              />
+            </div>
+          </div>
+        </div>
+
+        <!-- Status Filter -->
+        <div class="col-md-4">
+          <div class="form-group">
+            <label for="statusFilter"><i class="fa fa-tag"></i> Status:</label>
+            <select
+              class="form-control"
+              ng-model="selectedFilter"
+              ng-change="getUserBiddings()"
+              id="statusFilter"
+            >
+              <option value="">All Statuses</option>
+              <option ng-repeat="(key, value) in filterBid" value="{{ key }}">
+                {{ value }}
+              </option>
+            </select>
+          </div>
+        </div>
+
+
+        <!-- Sort Bar -->
+        <div class="col-md-4">
+          <div class="form-group">
+            <label for="sortOption"><i class="fa fa-sort"></i> Sort By:</label>
+            <select
+              class="form-control"
+              ng-model="sortOption"
+              ng-change="getUserBiddings()"
+              id="sortOption"
+            >
+              <option
+                ng-repeat="option in sortOptions"
+                value="{{option.value}}"
+              >
+                {{option.label}}
+              </option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- No Biddings Message -->
+  <div
+    class="alert alert-info"
+    ng-if="!isLoading && (!biddings || biddings.length === 0)"
+  >
+    <i class="fa fa-info-circle"></i> You haven't placed any bids yet.
+  </div>
+
+  <!-- Biddings List -->
+  <div ng-hide="isLoading">
+    <div class="row">
+      <div class="col-md-12">
+        <uib-accordion>
+          <!-- Fixed the lessThan filter usage -->
+          <div
+            uib-accordion-group
+            class="panel"
+            ng-repeat="bid in filteredBiddings = (biddings)"
+            is-open="status.open"
+            ng-class="{
+              'panel-warning': bid.status === 'pending',
+              'panel-success': bid.status === 'accepted',
+              'panel-danger': bid.status === 'rejected'
+            }"
+          >
+            <!-- Accordion Heading -->
+            <uib-accordion-heading>
+              <div class="row">
+                <div class="col-xs-8">
+                  <i class="fa fa-car"></i> 
+                <strong>{{ bid.car.carName }}</strong>
+                  <span
+                    class="label"
+                    ng-class="{'label-success': bid.status === 'accepted', 
+                                  'label-warning': bid.status === 'pending',
+                                  'label-danger': bid.status === 'rejected'}"
+                    style="margin-left: 2px;"
+                  >
+                    {{bid.status=== 'accepted' ? 'Accepted' : (bid.status === 'pending' ? 'Pending' : 'Rejected')}}
+                  </span>
+                  <!-- Add trip type badge -->
+                  <span 
+                    class="label"
+                    ng-class="{'label-info': bid.tripType === 'inCity', 'label-primary': bid.tripType === 'outStation'}"
+                    style="margin-left: 2px;"
+                  >
+                    <i ng-class="{'fa fa-building': bid.tripType === 'inCity', 'fa fa-road': bid.tripType === 'outStation'}"></i>
+                    {{bid.tripType === 'outStation' ? 'Outstation' : 'In-City'}}
+                  </span>
+                </div>
+                <div class="col-xs-4 text-right">
+                  <span class="label label-primary">
+                    {{bid.bidAmount | currency:"₹"}}</span
+                  >
+                  <span class="text-muted"
+                    ><small>{{bid.startDate | date:'MMM d, y'}}</small></span
+                  >
+                  <small
+                ><i
+                  class="pull-right glyphicon"
+                  ng-class="{'glyphicon-chevron-down': status.open, 'glyphicon-chevron-right': !status.open}"
+                ></i
+              ></small>
+                </div>
+              </div>
+            </uib-accordion-heading>
+
+            <!-- Accordion Content -->
+            <div class="row">
+              <!-- Car Image -->
+              <div class="col-md-3 text-center">
+                <img
+                  ng-src="{{ bid.car.imageUrl }}"
+                  alt="Car Image"
+                  class="img-thumbnail img-responsive"
+                  style="max-height: 150px"
+                />
+              </div>
+
+              <!-- Car Details -->
+              <div class="col-md-5">
+                <div class="panel panel-default">
+                  <div class="panel-heading">
+                    <h4 class="panel-title">
+                      <i class="fa fa-info-circle"></i> Car Details
+                    </h4>
+                  </div>
+                  <ul class="list-group">
+                    <li class="list-group-item">
+                      <i class="fa fa-tag"></i> Car Name
+                      <span class="badge">{{bid.car.carName}}</span>
+                    </li>
+                    <li class="list-group-item">
+                      <i class="fa fa-tag"></i> Category
+                      <span class="badge">{{bid.car.category}}</span>
+                    </li>
+                    <li class="list-group-item">
+                      <span class="badge"
+                        >{{bid.car.basePrice | currency:"₹"}}/day</span
+                      >
+                      <i class="fa fa-money"></i> Base Price
+                    </li>
+                    <li class="list-group-item">
+                      <span class="badge"
+                        >{{bid.car.pricePerKm | currency:"₹"}}/Km</span
+                      >
+                      <i class="fa fa-road"></i> Price per Km
+                    </li>
+                  </ul>
+                </div>
+              </div>
+
+              <!-- Booking Details -->
+              <div class="col-md-4">
+                <div class="panel panel-default">
+                  <div class="panel-heading">
+                    <h4 class="panel-title">
+                      <i class="fa fa-calendar"></i> Booking Details
+                    </h4>
+                  </div>
+                  <ul class="list-group">
+                    <!-- Add trip type to details -->
+                    <li class="list-group-item" ng-if="bid.tripType === 'outStation'">
+                      <span class="badge">
+                        {{bid.car.outStationCharges | currency:"₹"}}/day
+                      </span>
+                      <i class="fa fa-road"></i>
+                      OutStation Charges
+                    </li>
+                    <li class="list-group-item">
+                      <span class="badge">{{bid.startDate | date:'dd-MM-yyyy'}}</span>
+                      <i class="fa fa-calendar-plus-o"></i> Start Date
+                    </li>
+                    <li class="list-group-item">
+                      <span class="badge">{{bid.endDate | date:'dd-MM-yyyy'}}</span>
+                      <i class="fa fa-calendar-check-o"></i> End Date
+                    </li>
+                    <li class="list-group-item">
+                      <span class="badge">{{calculateDays(bid.startDate, bid.endDate)}} days</span>
+                      <i class="fa fa-clock-o"></i> Duration
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </uib-accordion>
+      </div>
+    </div>
+  </div>
+
+  <!-- No Results After Filtering Message -->
+  <div
+    class="alert alert-warning"
+    ng-if="!isLoading && biddings.length > 0 && filteredBiddings.length === 0"
+  >
+    <i class="fa fa-exclamation-triangle"></i> No biddings match your current
+    search criteria.
+  </div>
+
+
+  <div class="text-center">
+    <ul
+      uib-pagination
+      total-items="totalItems"
+      ng-model="currentPage"
+      ng-change="getUserBiddings(currentPage)"
+      items-per-page="itemsPerPage"
+      max-size="maxSize"
+      class="pagination-sm"
+      boundary-link-numbers="true"
+    ></ul>
+  </div>
+
+</div>

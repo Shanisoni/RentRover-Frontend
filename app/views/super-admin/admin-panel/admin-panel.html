@@ -1,0 +1,416 @@
+<div class="container-fluid p-4" ng-init="init()">
+  <div class="panel panel-default shadow-sm mb-4">
+    <div class="panel-heading bg-white p-3 border-bottom">
+      <div class="row">
+        <div class="col-xs-8">
+          <h2 class="mb-0" style="display: inline-block; margin-right: 15px;"><i class="fas fa-tachometer-alt text-primary me-2"></i>Platform Analytics</h2>
+          <div class="btn-group" style="display: inline-block;">
+            <button type="button" class="btn btn-outline-secondary" ng-click="setLastMonth()">
+              <i class="far fa-calendar-alt me-1"></i> Last Month
+            </button>
+            <button type="button" class="btn btn-outline-secondary" ng-click="setLastThreeMonths()">
+              <i class="far fa-calendar-alt me-1"></i> Last 3 Months
+            </button>
+            <button type="button" class="btn btn-outline-secondary" ng-click="setThisYear()">
+              <i class="far fa-calendar-alt me-1"></i> This Year
+            </button>
+          </div>
+        </div>
+        <div class="col-xs-4 text-right">
+          <button type="button" class="btn btn-danger pull-right" style="margin-top: 8px;" ng-click="logout()">
+            <i class="fas fa-sign-out-alt me-1"></i> Logout
+          </button>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Date Range Filter Panel -->
+    <div class="panel panel-default mb-4">
+      <div class="panel-heading">
+        <h4 class="panel-title">
+          <i class="bi bi-calendar3"></i> Date Range Filter
+        </h4>
+      </div>
+      <div class="panel-body">
+        <div class="row">
+          <div class="col-md-4">
+            <div class="form-group">
+              <label class="control-label">Start Date</label>
+              <div class="input-group">
+                <input type="text"
+                       class="form-control"
+                       uib-datepicker-popup="yyyy-MM-dd"
+                       ng-model="dateRange.startDate"
+                       is-open="startOpened"
+                       datepicker-options="{ startingDay: 1 }"
+                       ng-focus="startOpened = true"
+                       close-text="Close" />
+                <span class="input-group-btn">
+                  <button class="btn btn-default" ng-click="startOpened = true">
+                    <i class="bi bi-calendar3"></i>
+                  </button>
+                </span>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-group">
+              <label class="control-label">End Date</label>
+              <div class="input-group">
+                <input type="text"
+                       class="form-control"
+                       uib-datepicker-popup="yyyy-MM-dd"
+                       ng-model="dateRange.endDate"
+                       is-open="endOpened"
+                       datepicker-options="{ startingDay: 1 }"
+                       ng-focus="endOpened = true"
+                       close-text="Close" />
+                <span class="input-group-btn">
+                  <button class="btn btn-default" ng-click="endOpened = true">
+                    <i class="bi bi-calendar3"></i>
+                  </button>
+                </span>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-group">
+              <label class="control-label">&nbsp;</label>
+              <button class="btn btn-primary btn-block" ng-click="updateDateRange()">
+                <i class="bi bi-funnel"></i> Apply Filter
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+      
+  <!-- Loading State -->
+  <div class="text-center my-5" ng-if="isLoading">
+    <uib-progressbar class="progress-striped active" value="100" type="info"></uib-progressbar>
+    <p class="mt-2">Loading analytics data...</p>
+  </div>
+  
+  <!-- Error State -->
+  <uib-alert type="danger" close="dismissError()" ng-if="error">
+    <i class="fas fa-exclamation-triangle me-2"></i> {{ error }}
+  </uib-alert>
+  
+  <!-- Main Dashboard Content -->
+  <div ng-if="!isLoading && !error && analytics">
+    <!-- Platform Summary Section -->
+    <div class="panel panel-default shadow-sm mb-4">
+      <div class="panel-heading bg-white p-3 border-bottom">
+        <h5 class="panel-title m-0 fw-bold"><i class="fas fa-chart-pie me-2 text-primary"></i>Platform Summary</h5>
+      </div>
+      <div class="panel-body p-0">
+        <div class="row g-0">
+          <!-- Revenue Panel -->
+          <div class="col-md-3 border-end border-bottom">
+            <div class="panel panel-default h-100 mb-0 border-0">
+              <div class="panel-heading bg-primary text-white p-3">
+                <div class="d-flex align-items-center">
+                  <i class="fas fa-money-bill-wave fa-lg me-2"></i>
+                  <h5 class="panel-title m-0">Total Revenue</h5>
+                </div>
+              </div>
+              <div class="panel-body p-3">
+                <h3 class="mb-3 fw-bold text-center">₹{{ analytics.revenueSummary[0].totalRevenue | number:0 }}</h3>
+                <div class="d-flex align-items-center justify-content-between border-top pt-2">
+                  <span class="small text-muted">Avg. Booking: ₹{{ analytics.revenueSummary[0].avgBookingValue | number:0 }}</span>
+                  
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Bookings Panel -->
+          <div class="col-md-3 border-end border-bottom">
+            <div class="panel panel-default h-100 mb-0 border-0">
+              <div class="panel-heading bg-success text-white p-3">
+                <div class="d-flex align-items-center">
+                  <i class="fas fa-calendar-check fa-lg me-2"></i>
+                  <h5 class="panel-title m-0">Total Bookings</h5>
+                </div>
+              </div>
+              <div class="panel-body p-3">
+                <h3 class="mb-3 fw-bold text-center">{{ analytics.revenueSummary[0].totalBookings | number:0 }}</h3>
+                <div class="d-flex align-items-center justify-content-between border-top pt-2">
+                  <span class="small text-muted">Distance: {{ analytics.revenueSummary[0].totalDistance | number:0 }} km</span>
+                  
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Users Panel -->
+          <div class="col-md-3 border-end border-bottom">
+            <div class="panel panel-default h-100 mb-0 border-0">
+              <div class="panel-heading bg-info text-white p-3">
+                <div class="d-flex align-items-center">
+                  <h5 class="panel-title m-0">Top User</h5>
+                </div>
+              </div>
+              <div class="panel-body p-3">
+                <h3 class="mb-3 fw-bold text-center">{{ analytics.topRenters.labels[0] }}</h3>
+                <div class="pull-right">
+                  <div class="small text-muted">
+                    <span class="me-2">Total: {{ analytics.topRenters.values[0] }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Owner Panel -->
+          <div class="col-md-3 border-bottom">
+            <div class="panel panel-default h-100 mb-0 border-0">
+              <div class="panel-heading bg-warning text-white p-3">
+                <div class="d-flex align-items-center">
+                  <h5 class="panel-title m-0">Top Owner</h5>
+                </div>
+              </div>
+              <div class="panel-body p-3">
+                <h3 class="mb-3 fw-bold text-center">{{ analytics.topOwners.labels[0] }}</h3>
+                <div class="pull-right">
+                  <div class="small text-muted">
+                    <span class="me-2">Total: {{ analytics.topOwners.values[0] }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Revenue & Booking Trend Panel -->
+    <div class="panel panel-default shadow-sm mb-4">
+      <div class="panel-heading bg-white p-3 border-bottom d-flex justify-content-between align-items-center">
+        <h5 class="panel-title m-0 fw-bold"><i class="fas fa-chart-line me-2 text-primary"></i>Revenue & Booking Trend</h5>
+        
+      </div>
+      <div class="panel-body p-4">
+        <div class="chart-container" style="position: relative; height: 400px;">
+          <canvas id="revenueTrend"></canvas>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Top Performers Panel -->
+    <div class="panel panel-default shadow-sm mb-4">
+      <div class="panel-heading bg-white p-3 border-bottom">
+        <h5 class="panel-title m-0 fw-bold"><i class="fas fa-trophy me-2 text-primary"></i>Top Performers</h5>
+      </div>
+      <div class="panel-body p-3">
+        <div class="row">
+          <!-- Top Owners Panel -->
+          <div class="col-md-6 mb-3">
+            <div class="panel panel-default h-100 shadow-sm">
+              <div class="panel-heading bg-white p-3 border-bottom">
+                <h5 class="panel-title m-0 fw-bold"><i class="fas fa-user-tie me-2 text-primary"></i>Top Car Owners</h5>
+              </div>
+              <div class="panel-body p-3">
+                <div class="chart-container" style="position: relative; height: 380px;">
+                  <canvas id="topOwners"></canvas>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Top Renters Panel -->
+          <div class="col-md-6 mb-3">
+            <div class="panel panel-default h-100 shadow-sm">
+              <div class="panel-heading bg-white p-3 border-bottom">
+                <h5 class="panel-title m-0 fw-bold"><i class="fas fa-user me-2 text-primary"></i>Top Renters</h5>
+              </div>
+              <div class="panel-body p-3">
+                <div class="chart-container" style="position: relative; height: 380px;">
+                  <canvas id="topRenters"></canvas>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Distribution Analysis Panel -->
+    <div class="panel panel-default shadow-sm mb-4">
+      <div class="panel-heading bg-white p-3 border-bottom">
+        <h5 class="panel-title m-0 fw-bold"><i class="fas fa-chart-pie me-2 text-primary"></i>Distribution Analysis</h5>
+      </div>
+      <div class="panel-body p-3">
+        <div class="row">
+          <!-- Booking Status Panel -->
+          <div class="col-md-4 mb-3">
+            <div class="panel panel-default h-100 shadow-sm">
+              <div class="panel-heading bg-white p-3 border-bottom">
+                <h5 class="panel-title m-0 fw-bold"><i class="fas fa-tasks me-2 text-primary"></i>Booking Status</h5>
+              </div>
+              <div class="panel-body p-3">
+                <div class="chart-container" style="position: relative; height: 300px;">
+                  <canvas id="bookingsByStatus"></canvas>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Car Categories Panel -->
+          <div class="col-md-4 mb-3">
+            <div class="panel panel-default h-100 shadow-sm">
+              <div class="panel-heading bg-white p-3 border-bottom">
+                <h5 class="panel-title m-0 fw-bold"><i class="fas fa-tags me-2 text-primary"></i>Car Categories</h5>
+              </div>
+              <div class="panel-body p-3">
+                <div class="chart-container" style="position: relative; height: 300px;">
+                  <canvas id="categoryDistribution"></canvas>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Top Cities Panel -->
+          <div class="col-md-4 mb-3">
+            <div class="panel panel-default h-100 shadow-sm">
+              <div class="panel-heading bg-white p-3 border-bottom">
+                <h5 class="panel-title m-0 fw-bold"><i class="fas fa-city me-2 text-primary"></i>Top Cities</h5>
+              </div>
+              <div class="panel-body p-3">
+                <div class="chart-container" style="position: relative; height: 300px;">
+                  <canvas id="cityDistribution"></canvas>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- User Growth Panel -->
+    <div class="panel panel-default shadow-sm mb-4">
+      <div class="panel-heading bg-white p-3 border-bottom d-flex justify-content-between align-items-center">
+        <h5 class="panel-title m-0 fw-bold"><i class="fas fa-chart-line me-2 text-primary"></i>User Growth</h5>
+        
+      </div>
+      <div class="panel-body p-4">
+        <div class="chart-container" style="position: relative; height: 350px;">
+          <canvas id="userGrowth"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- No Data State -->
+  <div class="panel panel-default shadow-sm text-center py-5" ng-if="!isLoading && !error && (!analytics || Object.keys(analytics).length === 0)">
+    <div class="panel-body p-5">
+      <i class="fas fa-chart-bar fa-4x text-muted mb-3"></i>
+      <h4>No Analytics Data Available</h4>
+      <p class="text-muted">No data is available for the selected date range. Try adjusting your filters.</p>
+      <button class="btn btn-primary" ng-click="setLastThreeMonths()">
+        <i class="fas fa-sync-alt me-2"></i> View Last 3 Months
+      </button>
+    </div>
+  </div>
+
+  <!-- Configuration Management Panel -->
+  <div class="panel panel-default shadow-sm mb-4">
+    <div class="panel-heading bg-white p-3 border-bottom">
+      <h5 class="panel-title m-0 fw-bold"><i class="fas fa-cogs me-2 text-primary"></i>Configuration Management</h5>
+    </div>
+    <div class="panel-body p-4">
+      <div class="row">
+        <!-- Features Section -->
+        <div class="col-md-6 mb-4">
+          <div class="panel panel-default">
+            <div class="panel-heading">
+              <h5 class="panel-title"><i class="fas fa-list me-2"></i>Car Features</h5>
+            </div>
+            <div class="panel-body">
+              <div class="form-group">
+                <label>Add New Feature</label>
+                <div class="input-group">
+                  <input type="text" class="form-control" ng-model="newFeature" placeholder="Enter feature name">
+                  <span class="input-group-btn">
+                    <button class="btn btn-primary" ng-click="addFeature()">
+                      <i class="fas fa-plus me-1"></i> Add
+                    </button>
+                  </span>
+                </div>
+              </div>
+              
+            </div>
+          </div>
+        </div>
+
+        <!-- Cities Section -->
+        <div class="col-md-6 mb-4">
+          <div class="panel panel-default">
+            <div class="panel-heading">
+              <h5 class="panel-title"><i class="fas fa-city me-2"></i>Cities</h5>
+            </div>
+            <div class="panel-body">
+              <div class="form-group">
+                <label>Add New City</label>
+                <div class="input-group">
+                  <input type="text" class="form-control" ng-model="newCity" placeholder="Enter city name">
+                  <span class="input-group-btn">
+                    <button class="btn btn-primary" ng-click="addCity()">
+                      <i class="fas fa-plus me-1"></i> Add
+                    </button>
+                  </span>
+                </div>
+              </div>
+              
+            </div>
+          </div>
+        </div>
+
+        <!-- Categories Section -->
+        <div class="col-md-6 mb-4">
+          <div class="panel panel-default">
+            <div class="panel-heading">
+              <h5 class="panel-title"><i class="fas fa-tags me-2"></i>Car Categories</h5>
+            </div>
+            <div class="panel-body">
+              <div class="form-group">
+                <label>Add New Category</label>
+                <div class="input-group">
+                  <input type="text" class="form-control" ng-model="newCategory" placeholder="Enter category name">
+                  <span class="input-group-btn">
+                    <button class="btn btn-primary" ng-click="addCategory()">
+                      <i class="fas fa-plus me-1"></i> Add
+                    </button>
+                  </span>
+                </div>
+              </div>
+              
+            </div>
+          </div>
+        </div>
+
+        <!-- Fuel Types Section -->
+        <div class="col-md-6 mb-4">
+          <div class="panel panel-default">
+           
+            <div class="panel-body">
+              <div class="form-group">
+                <label>Add New Fuel Type</label>
+                <div class="input-group">
+                  <input type="text" class="form-control" ng-model="newFuelType" placeholder="Enter fuel type">
+                  <span class="input-group-btn">
+                    <button class="btn btn-primary" ng-click="addFuelType()">
+                      <i class="fas fa-plus me-1"></i> Add
+                    </button>
+                  </span>
+                </div>
+              </div>
+              
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

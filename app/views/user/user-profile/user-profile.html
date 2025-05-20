@@ -1,0 +1,72 @@
+<user-navbar></user-navbar>
+
+<div class="container" ng-init="init()">
+  <div class="row">
+    <!-- Profile Container - Responsive for all screens -->
+    <div class="col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2 col-xs-12">
+      <!-- Profile Panel -->
+      <div class="panel panel-primary">
+        <div class="panel-heading">
+          <h3 class="panel-title">
+            <!-- Responsive heading for different screens -->
+            <span class="visible-md visible-lg visible-xs visible-sm">
+              <i class="fa fa-user"></i> {{user.name}}
+              <span class="pull-right">
+                <i class="fa fa-id-badge"></i> {{user.role | uppercase}}
+              </span>
+            </span>
+          </h3>
+        </div>
+        
+        <div class="panel-body">
+          <div class="text-center">
+            <!-- Profile Image - Responsive sizing -->
+            <img ng-src="assets\img\default.png" alt="User Profile" 
+                 class="img-circle img-thumbnail" 
+                 style="width: 150px; height: 150px; margin-bottom: 20px; object-fit: cover;">
+            
+            <h2 class="visible-md visible-lg visible-xs visible-sm">{{ user.name }}</h2>
+          </div>
+          
+          <hr>
+          
+          <!-- User Details - Responsive layout -->
+          <div class="row">
+            <div class="col-sm-12">
+              <div class="list-group">
+                <div class="list-group-item">
+                  <i class="fa fa-envelope"></i> <strong>Email:</strong>
+                  <span class="pull-right">{{user.email}}</span>
+                </div>
+                
+                <div class="list-group-item">
+                  <i class="fa fa-phone"></i> <strong>Phone:</strong>
+                  <span class="pull-right">{{user.phone || 'Not provided'}}</span>
+                </div>
+                
+                <div class="list-group-item">
+                  <i class="fa fa-user-circle"></i> <strong>Role:</strong>
+                  <span class="pull-right">{{user.role}}</span>
+                </div>
+                
+                <div class="list-group-item">
+                  <i class="fa fa-calendar"></i> <strong>Joined:</strong>
+                  <span class="pull-right">{{user.createdAt | date:'mediumDate'}}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <hr>
+          
+          <!-- Logout Button - Responsive width -->
+          <div class="text-center">
+            <button class="btn btn-danger btn-lg btn-block" ng-click="logout()">
+              <i class="fa fa-sign-out"></i> Log Out
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

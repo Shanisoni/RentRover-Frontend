@@ -1,0 +1,119 @@
+<div class="container">
+  <div class="panel panel-default" style="max-width: 400px; margin: 50px auto; padding: 20px;">
+    <div class="panel-heading text-center">
+      <h2 class="text-primary">EZYCAR</h2>
+    </div>
+
+    <uib-tabset active="activeTab" class="w-100">
+      
+      <uib-tab index="0" heading="Login">
+        <div class="panel-body">
+          <form name="loginForm" ng-submit="login()" novalidate>
+            <div class="form-group">
+              <label>Email:</label>
+              <input type="email" class="form-control" ng-model="loginData.email" required>
+            </div>
+            <div class="form-group">
+              <label>Password:</label>
+              <input type="password" class="form-control" ng-model="loginData.password" required>
+            </div>
+            <button type="submit" class="btn btn-primary btn-block" ng-disabled="loginForm.$invalid">
+              Login
+            </button>
+          </form>
+        </div>
+      </uib-tab>
+
+      
+      <uib-tab index="1" heading="Sign Up">
+        <div class="panel-body">
+          <form name="signupForm" ng-submit="register()" novalidate>
+            <div class="form-group">
+              <label>User Type:</label>
+              <div class="btn-group">
+                <label class="btn btn-default">
+                  <input type="radio" ng-model="user.role" value="user" required> User
+                </label>
+                <label class="btn btn-default">
+                  <input type="radio" ng-model="user.role" value="owner" required> Owner
+                </label>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>First Name:</label>
+              <input type="text" class="form-control" ng-model="user.firstName" required>
+            </div>
+            <div class="form-group">
+              <label>Last Name:</label>
+              <input type="text" class="form-control" ng-model="user.lastName" required>
+            </div>
+
+            <div class="form-group">
+              <label>Email:</label>
+              <input type="email" class="form-control" ng-model="user.email" required>
+            </div>
+
+          
+            <div class="form-group" ng-class="{'has-error': signupForm.password.$invalid && (signupForm.password.$dirty || signupForm.$submitted)}">
+              <label>Password:</label>
+              <input 
+                type="password" 
+                name="password"
+                class="form-control" 
+                ng-model="user.password" 
+                strong-password
+                required>
+              <div class="help-block" ng-show="signupForm.password.$dirty || signupForm.$submitted">
+                <span ng-show="signupForm.password.$error.required">Password is required.</span>
+                <span ng-show="signupForm.password.$error.minlength">Password must be at least 8 characters.</span>
+                <span ng-show="signupForm.password.$error.hasUpperCase">Password must have at least one uppercase letter.</span>
+                <span ng-show="signupForm.password.$error.hasLowerCase">Password must have at least one lowercase letter.</span>
+                <span ng-show="signupForm.password.$error.hasNumber">Password must have at least one number.</span>
+                <span ng-show="signupForm.password.$error.hasSpecial">Password must have at least one special character.</span>
+              </div>
+            </div>
+
+
+            <div class="form-group" ng-class="{'has-error': signupForm.confirmPassword.$invalid && (signupForm.confirmPassword.$dirty || signupForm.$submitted)}">
+              <label>Confirm Password:</label>
+              <input 
+                type="password" 
+                name="confirmPassword"
+                class="form-control" 
+                ng-model="user.confirmPassword" 
+                compare-to="user.password"
+                required>
+              <span class="help-block" ng-show="signupForm.confirmPassword.$error.compareTo && (signupForm.confirmPassword.$dirty || signupForm.$submitted)">
+                Passwords do not match.
+              </span>
+            </div>
+
+         
+            
+            <div class="form-group" ng-class="{'has-error': signupForm.phone.$invalid && (signupForm.phone.$dirty || signupForm.$submitted)}">
+              <label>Phone Number:</label>
+              <input 
+                type="text" 
+                name="phone"
+                class="form-control" 
+                ng-model="user.phone" 
+                ng-pattern="/^[0-9]{10}$/"
+                required>
+              <span class="help-block" ng-show="signupForm.phone.$error.required && (signupForm.phone.$dirty || signupForm.$submitted)">
+                Phone number is required.
+              </span>
+              <span class="help-block" ng-show="signupForm.phone.$error.pattern && (signupForm.phone.$dirty || signupForm.$submitted)">
+                Phone number must be exactly 10 digits.
+              </span>
+            </div>
+
+            <button type="submit" class="btn btn-success btn-block" ng-disabled="signupForm.$invalid">
+              Sign Up
+            </button>
+          </form>
+        </div>
+      </uib-tab>
+    </uib-tabset>
+  </div>
+</div>

@@ -1,0 +1,345 @@
+<owner-navbar></owner-navbar>
+
+<div class="container-fluid" style="margin-top: 20px;">
+  <div class="row">
+    <!-- Desktop Chat List (Left Sidebar) -->
+    <div class="col-md-4 hidden-xs hidden-sm">
+      <div class="panel panel-primary">
+        <div class="panel-heading" style="background-color: #3a4b58; border-color: #2c3e50;">
+          <h3 class="panel-title">
+            <i class="fa fa-comments"></i> Chats
+          </h3>
+        </div>
+        <div class="list-group" ng-include="'chat-list-template'">
+        </div>
+      </div>
+    </div>
+
+    <!-- Mobile Chat List Dropdown -->
+    <div class="visible-xs visible-sm" ng-if="isChatListVisible" 
+         style="position: absolute; top: 50px; left: 0; z-index: 1050; width: 100%; padding: 0 15px;">
+      <div class="panel panel-primary" style="margin: 0; box-shadow: 0 2px 5px rgba(0,0,0,0.2);">
+        <div class="panel-heading" style="background-color: #3a4b58; border-color: #2c3e50;">
+          <h3 class="panel-title">
+            <i class="fa fa-comments"></i> Chats
+            <button type="button" class="close" ng-click="toggleChatList()">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </h3>
+        </div>
+        <div class="list-group" ng-include="'chat-list-template'">
+        </div>
+      </div>
+    </div>
+
+    <!-- Chat List Template -->
+    <script type="text/ng-template" id="chat-list-template">
+      <!-- Loading state -->
+      <div class="list-group-item text-center" ng-if="isLoading">
+        <span class="fa fa-spinner fa-spin"></span> Loading chats...
+      </div>
+      
+      <!-- Empty state for no chats -->
+      <div class="list-group-item text-center" ng-if="chats.length === 0 && !isLoading">
+        <i class="fa fa-info-circle"></i> No chats available
+      </div>
+      
+      <!-- Chat list items -->
+      <a href="#" class="list-group-item" 
+         ng-repeat="chat in chats" 
+         ng-click="selectChat(chat);"
+         ng-class="{'active-chat': chat === selectedChat}"
+         style="border-left: 18px solid transparent; transition: all 0.2s ease;">
+        <div class="media">
+          <div class="media-left">
+            <div class="position-relative">
+              <img class="media-object img-circle" 
+                   ng-src="assets\img\default.png" 
+                   alt="{{ chat.user.name }}"
+                   style="width: 50px; height: 50px; border: 2px solid #eee;">
+              <span class="badge badge-success" style="position: absolute; bottom: 0; right: 0; background-color: #5cb85c; border-radius: 50%; width: 12px; height: 12px;"
+                    ng-if="hasUnreadMessages(chat)"></span>
+            </div>
+          </div>
+          <div class="media-body">
+            <div class="row">
+              <div class="col-xs-10">
+                <h5 class="media-heading" style="margin-bottom: 2px; font-weight: 600;">
+                  {{ chat.user.name }}
+                  <small class="label label-info" style="font-size: 10px;">
+                    {{ chat.user.email }}
+                  </small>
+                </h5>
+              </div>
+            </div>
+            <div class="row" style="margin-top: 5px;">
+              <div class="col-xs-12">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                  <span class="label label-default" style="display: inline-block; font-size: 11px; background-color: #f3f3f3; color: #666; border-radius: 3px; padding: 2px 5px;">
+                    <i class="fa fa-car"></i> {{ chat.car.carName }}
+                  </span>
+                  <span class="label label-primary" style="display: inline-block; font-size: 11px; background-color: #337ab7; border-radius: 3px; padding: 2px 5px;">
+                     {{ chat.car.basePrice | currency:"₹" }}/day
+                  </span>
+                  <span class="label label-warning" style="display: inline-block; font-size: 11px; background-color: #f0ad4e; border-radius: 3px; padding: 2px 5px;">
+                    <i class="fa fa-map-marker"></i> {{ chat.car.city }}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Car thumbnail preview -->
+        <div class="row" style="margin-top: 8px;">
+          <div class="col-xs-12">
+            <div style="display: flex; align-items: center;">
+              <img ng-src="{{ chat.car.imageUrl }}" 
+                   alt="{{ chat.car.carName }}" 
+                   style="width: 60px; height: 40px; object-fit: cover; border-radius: 4px; margin-right: 10px;">
+              
+            </div>
+          </div>
+        </div>
+      </a>
+    </script>
+
+    <!-- Chat Window (Right Side) -->
+    <div class="col-md-8" ng-class="{'col-xs-12': !isChatListVisible}">
+      <div class="panel panel-default">
+        <!-- Chat Header with Hamburger -->
+        <div class="panel-heading" style="background-color: #f8f9fa; border-bottom: 1px solid #dee2e6;">
+          <div class="row">
+            <div class="col-xs-8">
+              <!-- Mobile Toggle Button (Always Visible) -->
+              <button class="btn btn-link visible-xs visible-sm pull-left" 
+                      ng-click="toggleChatList()" 
+                      style="margin-right: 10px; padding: 0; color: #333;">
+                <i class="fa fa-bars fa-lg"></i>
+              </button>
+              
+              <h3 class="panel-title" style="color: #939393;" ng-if="selectedChat">
+                <img class="img-circle" 
+                     ng-src="assets\img\default.png" 
+                     alt="{{ selectedChat.user.name }}"
+                     style="width: 30px; height: 30px; margin-right: 10px;">
+                {{ selectedChat.user.name }}
+              </h3>
+              <small class="text-muted" ng-if="selectedChat">
+                <i class="fa fa-car"></i> {{ selectedChat.car.carName }}
+                <span ng-if="selectedChat.car.basePrice"> • ₹{{ selectedChat.car.basePrice }}</span>
+              </small>
+            </div>
+          </div>
+        </div>
+
+        <!-- No chat selected -->
+        <div
+          class="panel-body text-center"
+          ng-if="!selectedChat"
+          style="
+            min-height: 400px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+          "
+        >
+          <div>
+            <i class="fa fa-comments-o fa-4x text-muted"></i>
+            <h3>Select a conversation</h3>
+            <p class="text-muted">
+              Choose a chat from the list to start messaging
+            </p>
+          </div>
+        </div>
+
+        <!-- When a chat is selected -->
+        <div ng-if="selectedChat">
+          <!-- Messages Container -->
+          <div
+            class="panel-body"
+            style="height: 400px; overflow-y: auto; background-color: #f9f9f9"
+            id="messagesContainer"
+          >
+            <!-- Empty state -->
+            <div
+              class="text-center"
+              ng-if="messages.length === 0"
+              style="margin-top: 100px"
+            >
+              <i class="fa fa-envelope-o fa-3x text-muted"></i>
+              <p>No messages yet. Start the conversation!</p>
+            </div>
+
+            <div ng-if="messages.length > 0">
+              <!-- Date separator -->
+              <div class="text-center" style="margin: 10px 0">
+                <span class="label label-default"
+                  >{{ messages[0].createdAt | date:'mediumDate' }}</span
+                >
+              </div>
+
+              <!-- Messages -->
+              <div
+                ng-repeat="msg in messages | orderBy: 'createdAt'"
+                style="margin-bottom: 15px"
+              >
+                <div class="row">
+                  <!-- Sent messages -->
+                  <div
+                    class="col-xs-8 col-xs-offset-4 text-right"
+                    ng-if="msg.sender !== selectedChat.user._id"
+                  >
+                    <div
+                      style="
+                        display: inline-block;
+                        text-align: left;
+                        max-width: 100%;
+                        background-color: #b4d2ec;
+                        border-radius: 10px;
+                        padding: 10px;
+                        position: relative;
+                      "
+                    >
+                      <!-- Text message -->
+                      <div ng-if="!msg.attachment.imageUrl">{{ msg.message }}</div>
+
+                      <!-- Image message -->
+                      <div ng-if="msg.attachment.imageUrl">
+                        <img
+                          ng-src="{{ msg.attachment.imageUrl }}"
+                          alt="Shared image"
+                          style="
+                            max-width: 100%;
+                            max-height: 200px;
+                            cursor: pointer;
+                            border-radius: 5px;
+                          "
+                        />
+                        <p>{{msg.message}}</p>
+                      </div>
+                      <div class="text-right">
+                        <small class="text-muted"
+                          >{{ msg.createdAt | date:'shortTime' }}</small
+                        >
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Received messages -->
+                  <div class="col-xs-8" ng-if="msg.sender === selectedChat.user._id">
+                    <div
+                      style="
+                        display: inline-block;
+                        text-align: left;
+                        max-width: 100%;
+                        background-color: #ffffff;
+                        border-radius: 10px;
+                        padding: 10px;
+                        position: relative;
+                        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+                      "
+                    >
+                      <!-- Text message -->
+                      <div ng-if="!msg.attachment.imageUrl">{{ msg.message }}</div>
+
+                      <!-- Image message -->
+                      <div ng-if="msg.attachment.imageUrl">
+                        <img
+                          ng-src="{{ msg.attachment.imageUrl }}"
+                          alt="Shared image"
+                          style="
+                            max-width: 100%;
+                            max-height: 200px;
+                            cursor: pointer;
+                            border-radius: 5px;
+                          "
+                        />
+                        <p>{{msg.message}}</p>
+                      </div>
+                      <div>
+                        <small class="text-muted"
+                          >{{ msg.createdAt | date:'shortTime' }}</small
+                        >
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Image preview before sending -->
+          <div
+            class="panel-body bg-info"
+            ng-if="imagePreviewUrl"
+            style="padding: 10px; border-top: 1px solid #ddd"
+          >
+            <div class="row">
+              <div class="col-xs-9">
+                <strong>Image Preview</strong>
+              </div>
+              <div class="col-xs-3 text-right">
+                <button
+                  class="btn btn-xs btn-default"
+                  ng-click="cancelImageUpload()"
+                >
+                  <i class="fa fa-times"></i>
+                </button>
+              </div>
+            </div>
+            <div style="margin-top: 10px">
+              <img
+                ng-src="{{ imagePreviewUrl }}"
+                alt="Image preview"
+                style="max-height: 150px; max-width: 100%; border-radius: 5px"
+              />
+            </div>
+          </div>
+
+          <!-- Input Field and Send Button -->
+          <div class="panel-footer" style="background-color: #f8f8f8">
+            <form ng-submit="sendMessage(currentMessage.messageText)">
+              <div class="input-group">
+                <input
+                  type="text"
+                  class="form-control"
+                  ng-model="currentMessage.messageText"
+                  placeholder="Type a message..."
+                  ng-disabled="uploadingImage"
+                  style="border-radius: 20px 0 0 20px"
+                />
+                <span class="input-group-btn">
+                  <button
+                    class="btn btn-default"
+                    type="button"
+                    title="Attach image"
+                    onclick="document.getElementById('imageUpload').click()"
+                  >
+                    <i class="fa fa-camera"></i>
+                  </button>
+                  <input
+                    id="imageUpload"
+                    type="file"
+                    accept="image/jpeg,image/png,image/gif,image/webp"
+                    onchange="angular.element(this).scope().prepareImageUpload(this)"
+                    style="display: none"
+                  />
+                  <button
+                    class="btn btn-primary"
+                    type="submit"
+                    style="border-radius: 0 20px 20px 0"
+                    ng-disabled="uploadingImage || (!currentMessage.messageText.trim() && !imageToUpload)"
+                  >
+                    <i class="fa fa-paper-plane"></i>
+                    <span ng-if="!uploadingImage">Send</span>
+                    <span ng-if="uploadingImage">Sending...</span>
+                  </button>
+                </span>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

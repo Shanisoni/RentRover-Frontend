@@ -1,0 +1,80 @@
+<owner-navbar></owner-navbar>
+
+<div class="container" ng-init="init()">
+  <!-- Loading State -->
+  <div class="text-center" ng-show="isLoading">
+    <uib-progress>
+      <uib-bar value="100" type="info" class="progress-striped active">
+        <span>Loading profile...</span>
+      </uib-bar>
+    </uib-progress>
+  </div>
+
+  <div class="row" ng-show="!isLoading">
+    <!-- Profile Container - Responsive for all screens -->
+    <div class="col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2 col-xs-12">
+      <!-- Profile Panel -->
+      <div class="panel panel-primary">
+        <div class="panel-heading">
+          <!-- Responsive heading for different screens -->
+          <span class="visible-md visible-lg visible-xs visible-sm">
+            <i class="fa fa-user"></i> {{owner.name}}
+            <span class="pull-right">
+              <i class="fa fa-id-badge"></i> {{owner.role | uppercase}}
+            </span>
+          </span>
+        </div>
+        
+        <div class="panel-body">
+          <div class="text-center">
+            <!-- Profile Image - Responsive sizing -->
+            <img ng-src="assets\img\default.png" alt="Owner Profile" 
+                 class="img-circle img-thumbnail" 
+                 style="width: 150px; height: 150px; margin-bottom: 20px; object-fit: cover;">
+            
+            <h2 class="visible-md visible-lg">{{ owner.name }}</h2>
+            <h3 class="visible-xs visible-sm">{{ owner.name }}</h3>
+          </div>
+          
+          <hr>
+          
+          <!-- Owner Details - Responsive layout -->
+          <div class="row">
+            <div class="col-sm-12">
+              <div class="list-group">
+                <div class="list-group-item">
+                  <i class="fa fa-envelope"></i> <strong>Email:</strong>
+                  <span class="pull-right">{{owner.email}}</span>
+                </div>
+                
+                <div class="list-group-item">
+                  <i class="fa fa-phone"></i> <strong>Phone:</strong>
+                  <span class="pull-right">{{owner.phone || 'Not provided'}}</span>
+                </div>
+                
+                <div class="list-group-item">
+                  <i class="fa fa-id-badge"></i> <strong>Role:</strong>
+                  <span class="pull-right">{{owner.role}}</span>
+                </div>
+                
+                <div class="list-group-item">
+                  <i class="fa fa-calendar"></i> <strong>Joined:</strong>
+                  <span class="pull-right">{{owner.createdAt | date:'mediumDate'}}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <hr>
+          
+          <!-- Logout Button - Responsive width -->
+          <div class="text-center">
+            <button class="btn btn-danger btn-lg btn-block" ng-click="logout()">
+              <i class="fa fa-sign-out"></i> Log Out
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

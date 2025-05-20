@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<!-- 
+  Main Application HTML
+  This is the entry point of the AngularJS application.
+  The ng-app directive initializes the Angular application named 'myApp'.
+-->
+<html lang="en" ng-app="myApp">
+<head>
+  <!-- Base URL for routing -->
+  <base href="/" />
+  
+  <!-- Meta tags for character encoding and responsive design -->
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>EZYCAR</title>
+  
+  <!-- ==========================================
+       Favicon Configuration
+       ========================================== -->
+  <link rel="icon" href="assets/img/car.jpeg">
+  <meta name="theme-color" content="#ffffff">
+  
+  <!-- ==========================================
+       External CSS Dependencies
+       ========================================== -->
+  <!-- Font Awesome for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <!-- Toastify for notifications -->
+  <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+  <!-- Bootstrap for UI components -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/css/bootstrap.min.css">
+  <!-- Flatpickr for date picker -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+
+  <!-- ==========================================
+       External JavaScript Dependencies
+       ========================================== -->
+  <!-- Core Libraries -->
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-router/1.0.28/angular-ui-router.min.js"></script>
+  
+  <!-- Utility Libraries -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/async/3.2.4/async.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/uuid/8.3.2/uuid.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+  
+  <!-- UI Components and Features -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/2.5.0/ui-bootstrap-tpls.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+  <script src="https://npmcdn.com/flatpickr/dist/l10n/fr.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  
+  <!-- Real-time Communication -->
+  <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+
+  <!-- ==========================================
+       Application Core Files
+       ========================================== -->
+  <!-- Main Application Module -->
+  <script src="app.js"></script>
+  
+  <!-- Services -->
+  <script src="app/services/Auth.service.js"></script>
+  <script src="app/config/app.routes.js"></script>
+  <script src="app/services/Bidding.service.js"></script>
+  <script src="app/services/Chat.service.js"></script>
+  <script src="app/services/Dashboard.service.js"></script>
+  <script src="app/services/Car.service.js"></script>
+  <script src="app/services/Booking.service.js"></script>
+  <script src="app/services/Analysis.service.js"></script>
+  
+  <!-- ==========================================
+       Controllers
+       ========================================== -->
+  <!-- Authentication -->
+  <script src="app/views/auth/auth.controller.js"></script>
+  
+  <!-- User Controllers -->
+  <script src="app/views/user/user-dashboard/user-dashboard.controller.js"></script>
+  <script src="app/views/user/user-car/user-car.controller.js"></script>
+  <script src="app/views/user/user-bookings/user-bookings.controller.js"></script>
+  <script src="app/views/user/user-bidding/user-bidding.controller.js"></script>
+  <script src="app/views/user/user-chat/user-chat.controller.js"></script>
+  <script src="app/views/user/user-profile/user-profile.controller.js"></script>
+  
+  <!-- Owner Controllers -->
+  <script src="app/views/owner/owner-dashboard/owner-dashboard.controller.js"></script>
+  <script src="app/views/owner/owner-addCar/owner-addCar.controller.js"></script>
+  <script src="app/views/owner/owner-booking/owner-booking.controller.js"></script>
+  <script src="app/views/owner/owner-Bidding/owner-bidding.controller.js"></script>
+  <script src="app/views/owner/owner-Analysis/owner-analysis.controller.js"></script>
+  <script src="app/views/owner/owner-chat/owner-chat.controller.js"></script>
+  <script src="app/views/owner/owner-profile/owner-profile.controller.js"></script>
+  
+  <!-- Admin Controllers -->
+  <script src="app/views/super-admin/admin-panel/admin-panel.controller.js"></script>
+  <script src="\app\services\config.service.js"></script>
+  
+  <!-- ==========================================
+       Directives, Factories, and Components
+       ========================================== -->
+  <!-- Directives -->
+  <script src="app/directives/auth.directive.js"></script>
+  <script src="app/directives/password.directive.js"></script>
+  
+  <!-- Factories -->
+  <script src="app/factories/toast.factory.js"></script>
+  <script src="app/factories/location.factory.js"></script>
+  <script src="app/factories/user.factory.js"></script>
+  <script src="app/factories/AuthInterceptor.factory.js"></script>
+  <script src="app/factories/car.factory.js"></script>
+  <script src="app/factories/bid.factory.js"></script>
+  <script src="app/factories/pdf.factory.js"></script>
+  <!-- Components -->
+  <script src="app/components/user-navbar/user-navbar.js"></script>
+  <script src="app/components/owner-navbar/owner-navbar.js"></script>
+  <script src="app/components/card/card.component.js"></script>
+  <script src="app/components/modals/booking.component.js"></script>
+  <script src="app/components/modals/alert.component.js"></script>
+  <script src="app/components/modals/editCarForm.component.js"></script>
+  <script src="app/components/modals/invoice.component.js"></script>
+  <script src="app/components/modals/bidding.component.js"></script>
+  
+  <!-- Utilities -->
+  <script src="app/utils/constant.js"></script>
+</head>
+
+<body ng-controller="MainController">
+  <!-- Main application view container -->
+  <div ui-view></div>
+</body>
+</html>
