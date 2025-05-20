@@ -13,7 +13,6 @@ const myApp = angular.module('myApp', [
   'ui.router',    // Handles client-side routing
   'ui.bootstrap'  // Bootstrap UI components
 ]);
-myApp.constant('API_BASE_URL', 'https://rentrover-backend-1.onrender.com');
 
 /**
  * @description Configure HTTP interceptors for the application
@@ -32,8 +31,7 @@ function($scope, AuthService, ToastService) {
 
   const initSocket = function(user) {
     if (!socket) {
-      socket = io("https://rentrover-backend-1.onrender.com");
-
+      socket = io("https://ezycar-hosted-1.onrender.com");
       currentUser = user;
       
       socket.emit('joinUserRoom', user._id);

@@ -7,10 +7,8 @@ myApp.service("AuthService", [
   "$state",
   "$http",
   "ToastService", 
-  "API_BASE_URL",
-
+  "BASE_URL",
   function($q, $state, $http, ToastService,BASE_URL) {
-    
     // ==========================================
     // User Authentication
     // ==========================================

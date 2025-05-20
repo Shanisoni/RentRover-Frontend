@@ -57,4 +57,4 @@ myApp.constant('FUEL_TYPES', [
   'Electric',
 ]);
 
-myApp.constant('BASE_URL', 'http://localhost:8000');
+myApp.constant('BASE_URL', 'https://rentrover-backend-1.onrender.com');
