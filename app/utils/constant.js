@@ -1,5 +1,11 @@
 myApp.constant('CITIES', [
   "Delhi",
+  "Ghaziabad",
+  "Noida",
+  "Faridabad",
+  "Gurgaon",
+  "Navi Mumbai", 
+  
   "Mumbai",
   "Bengaluru",
   "Chennai",
