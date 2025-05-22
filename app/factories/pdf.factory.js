@@ -21,7 +21,7 @@ myApp.factory('PDFFactory', ['$window', function($window) {
       includeCompanyLogo: true,
       showDetailedCalculations: true,
       includeTerms: true,
-      companyName: "EZYCAR",
+      companyName: "RentRover",
       companyAddress: "Kirti Nagar, Delhi, India",
       companyContact: "+91 1234567890",
       companyEmail: "support@ezycar.com",
@@ -70,11 +70,11 @@ myApp.factory('PDFFactory', ['$window', function($window) {
     
     // Set document properties
     doc.setProperties({
-      title: `EZYCAR Invoice ${booking._id}`,
+      title: `RentRover Invoice ${booking._id}`,
       subject: 'Car Rental Invoice',
-      author: 'EZYCAR',
+      author: 'RentRover',
       keywords: 'invoice, car rental',
-      creator: 'EZYCAR PDF Generator'
+      creator: 'RentRover PDF Generator'
     });
 
     // Header section with company info
@@ -298,7 +298,7 @@ myApp.factory('PDFFactory', ['$window', function($window) {
     doc.setTextColor(255, 255, 255);
     doc.setFontSize(9);
     doc.setFont("helvetica", "normal");
-    doc.text("Thank you for choosing EZYCAR for your journey!", 105, 288, { align: "center" });
+    doc.text("Thank you for choosing RentRover for your journey!", 105, 288, { align: "center" });
     doc.text(settings.companyWebsite, 105, 292, { align: "center" });
     
     return doc;

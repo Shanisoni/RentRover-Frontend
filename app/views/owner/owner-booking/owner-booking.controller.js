@@ -256,7 +256,7 @@ myApp.controller("ownerBookingController", [
       // Use the PDF Generator utility to create a professional invoice
       const doc = PDFFactory.generateBookingInvoice(booking, {
         // You can override default options here if needed
-        companyName: "EZYCAR",
+        companyName: "RentRover",
         includeTerms: true
       });
       
