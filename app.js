@@ -3,6 +3,7 @@
  * Initializes the Angular application with required dependencies and HTTP interceptor setup
  */
 
+
 /**
  * @type {Object}
  * @description Angular module instance for the main application
@@ -14,6 +15,7 @@ const myApp = angular.module('myApp', [
   'ui.bootstrap'  // Bootstrap UI components
 ]);
 
+
 /**
  * @description Configure HTTP interceptors for the application
  * Sets up the AuthInterceptor to handle authentication for all HTTP requests
@@ -23,11 +25,14 @@ myApp.config(['$httpProvider', function($httpProvider) {
   $httpProvider.interceptors.push('AuthInterceptor');
 }]);
 
+
+
 myApp.controller('MainController', ['$scope', 'AuthService', 'ToastService', 
 function($scope, AuthService, ToastService) {
   
   let socket = null;
   let currentUser = null;
+
 
   const initSocket = function(user) {
     if (!socket) {
@@ -51,6 +56,9 @@ function($scope, AuthService, ToastService) {
     }
   };
 
+
+
+  
   // Initialize on app start
   $scope.init = function() {
     AuthService.userProfile().then((user) => {
