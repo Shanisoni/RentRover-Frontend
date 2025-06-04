@@ -23,6 +23,8 @@ myApp.config(['$httpProvider', function($httpProvider) {
   $httpProvider.interceptors.push('AuthInterceptor');
 }]);
 
+
+
 myApp.controller('MainController', ['$scope', 'AuthService', 'ToastService', 
 function($scope, AuthService, ToastService) {
   
