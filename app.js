@@ -24,7 +24,7 @@ myApp.config(['$httpProvider', function($httpProvider) {
 }]);
 
 
-
+// add hrere 
 myApp.controller('MainController', ['$scope', 'AuthService', 'ToastService', 
 function($scope, AuthService, ToastService) {
   
